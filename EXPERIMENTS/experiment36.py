@@ -33,7 +33,7 @@ def main():
     MAPs_fly = np.zeros_like(MAPs_dp)
     for i, k in enumerate(ks):
         for j, num in enumerate(num_anchs[i]):
-            index_dp = DistPerm(num, d=k)
+            index_dp = DistPerm(num, k=k)
             index_dp.fit(db)
             index_dp.add(db)
             index_fly = lshfly.flylsh(data, hash_length=k, sampling_ratio=0.1, embedding_size=num)

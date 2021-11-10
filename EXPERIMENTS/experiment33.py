@@ -9,7 +9,7 @@ from dist_perm import DistPerm
 import utils
 
 def main():
-    
+
     n = 10000
     D = 128
     num_queries = 50
@@ -29,7 +29,7 @@ def main():
     true = index_l2.search(quers, R)[1]
 
     num_anchs = (k*np.arange(1, k+1, 2)).astype(np.int)
-    index_dp = DistPerm(max(num_anchs), d=k)
+    index_dp = DistPerm(max(num_anchs), k=k)
     all_anchs = index_dp.fit(db)
 
     MAPs = np.zeros_like(num_anchs, dtype=np.float32)

@@ -27,20 +27,20 @@ def main():
     queries = data_source.generate_queries(num_queries)
     quers = np.array(queries).astype(np.float32)
     #quers = quers / np.linalg.norm(quers, axis=1)[:, np.newaxis]
-    
+
     #print(data.shape)
     #print(quers.shape)
     index_l2 = faiss.IndexFlatL2(D)
     index_l2.add(data)
     true = index_l2.search(quers, R)[1]
-    
+
     MAPs_dp = len(ds)*[0]
     MAPs_lsh = len(ds)*[0]
     #MAPs2 = len(ds)*[0]
     #MAPs3 = len(ds)*[0]
     #MAPs4 = len(ds)*[0]
     for j, dj in enumerate(ds):
-        index_dp = DistPerm(k, d=dj)
+        index_dp = DistPerm(k, k=dj)
         #index_dp2 = DistPerm(k, d=dj)
         #index_dp3 = DistPerm(k, d=dj)
         index_lsh = faiss.IndexLSH(D, dj)
@@ -69,7 +69,7 @@ def main():
         #MAPs2[j] = np.mean(avg_precision2)
         #MAPs3[j] = np.mean(avg_precision3)
         #MAPs4[j] = np.mean(avg_precision4)
-        
+
         print('AP@%d: %.3f [Random]' % (R, MAPs_dp[j]))
         print('AP@%d: %.3f [LSH]' % (R, MAPs_lsh[j]))
         print('AP@%d: %.3f [Fly]\n' % (R, flymap))

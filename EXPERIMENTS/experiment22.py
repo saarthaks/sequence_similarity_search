@@ -23,7 +23,7 @@ def main():
     data_source = BERTDataset(file_q, file_db, n)
     db = data_source.generate_db()
     
-    index_dp = DistPerm(k, d=d)
+    index_dp = DistPerm(k, k=d)
     index_l2 = faiss.IndexFlatL2(D)
     index_nn = NearestNeighbors(n_neighbors=R)
     index_pq = faiss.IndexPQ(D, d, 4)
