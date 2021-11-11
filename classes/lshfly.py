@@ -9,6 +9,7 @@ from functools import reduce
 from sklearn.cluster import KMeans
 #from bokeh.plotting import figure,output_file,output_notebook,show
 #import bokeh
+np.random.seed(30)
 
 class Dataset(object):
     def __init__(self,name,path='./datasets/'):
@@ -114,6 +115,8 @@ class LSH(object):
         self.weights=np.random.random((data.shape[1],hash_length))
         self.hashes=(self.data@self.weights)>0
         self.maxl1distance=2*self.hash_length
+        self.queries = None
+        self.queries_hashes = None
 
     def query(self,qidx,nnn,not_olap=False):
         L1_distances=np.sum(np.abs(self.hashes[qidx,:]^self.hashes),axis=1)
@@ -125,6 +128,22 @@ class LSH(object):
 
         NNs=L1_distances.argsort()
         NNs=NNs[(NNs != qidx)][:nnn]
+        #print(L1_distances[NNs]) #an interesting property of this hash is that the L1 distances are always even
+        return NNs
+
+    def query_2(self,qidx,nnn,not_olap=False):
+        L1_distances=np.sum(np.abs(self.queries_hashes[qidx,:]^self.hashes),axis=1)
+        # print(L1_distances)
+        # print(L1_distances.shape)
+        #np.sum(np.bitwise_xor(self.hashes[qidx,:],self.hashes),axis=1)
+        nnn=min(self.queries_hashes.shape[0],nnn)
+        if not_olap:
+            no_overlaps=np.sum(L1_distances==self.maxl1distance)
+            return no_overlaps
+
+        NNs=L1_distances.argsort()
+        NNs=NNs[(NNs != qidx)][:nnn]
+        # print(NNs.shape)
         #print(L1_distances[NNs]) #an interesting property of this hash is that the L1 distances are always even
         return NNs
 
@@ -141,10 +160,34 @@ class LSH(object):
         for idx1,idx2 in enumerate(indices):
             all_NNs[idx1,:]=self.true_nns(idx2,nnn)
         return all_NNs
+
+    def true_nns_2(self,qidx,nnn):
+        sample=self.queries[qidx,:]
+        tnns=np.sum((self.data-sample)**2,axis=1).argsort()[:nnn]
+        # tnns=tnns[(tnns!=qidx)]
+        if nnn<self.data.shape[0]:
+            # print(len(tnns))
+            assert len(tnns)==nnn, 'nnn={}'.format(nnn)
+        return tnns
+        
+    def construct_true_nns_2(self,indices,nnn):
+        all_NNs=np.zeros((len(indices),nnn))
+        for idx1,idx2 in enumerate(indices):
+            all_NNs[idx1,:]=self.true_nns_2(idx2,nnn)
+        return all_NNs
     
     def AP(self,predictions,truth):
         assert len(predictions)==len(truth) or len(predictions)==self.hashes.shape[0]
         #removed conversion to list in next line:
+        precisions=[len((set(predictions[:idx]).intersection(set(truth[:idx]))))/idx for\
+                    idx in range(1,len(truth)+1)]
+        return np.mean(precisions)
+
+    def AP_2(self,predictions,truth):
+        # assert len(predictions)==len(truth) or len(predictions)==self.hashes.shape[0]
+        #removed conversion to list in next line:
+        # print(predictions)
+        # print(truth)
         precisions=[len((set(predictions[:idx]).intersection(set(truth[:idx]))))/idx for\
                     idx in range(1,len(truth)+1)]
         return np.mean(precisions)
@@ -193,6 +236,23 @@ class LSH(object):
             self.allAPs.append(this_AP)
         return np.mean(self.allAPs)
 
+    def findmAP3(self,nnn, n_points):
+        indices = [i for i in range(n_points)]
+        all_NNs=self.construct_true_nns_2(indices,nnn)
+        self.allAPs=[]
+        for eidx,didx in enumerate(indices):
+            #eidx: enumeration id, didx: index of sample in self.data
+            this_nns=self.query_2(didx,nnn)
+            # print(len(this_nns))
+            # print(len(all_NNs[eidx,:]))
+            this_AP=self.AP_2(list(this_nns),list(all_NNs[eidx,:]))
+            # print(this_nns)
+            # print(all_NNs[eidx,:])
+            # return
+            #print(this_AP)
+            self.allAPs.append(this_AP)
+        return np.mean(self.allAPs)
+
     def findmAP2(self, sample_indices, nnn):
         all_NNs=self.construct_true_nns(sample_indices,nnn)
         self.allAPs=[]
@@ -201,6 +261,7 @@ class LSH(object):
             this_AP=self.AP(list(this_nns), list(all_NNs[eidx,:]))
             self.allAPs.append(this_AP)
         return np.mean(self.allAPs), np.std(self.allAPs)
+
 
     def findZKk(self,n_points):
         """

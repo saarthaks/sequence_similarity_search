@@ -36,7 +36,7 @@ class DistPerm:
         # boolean to ensure anchors were chosen before storing data
         self.is_trained = False
 
-    def fit(self, training_data, alg='random'):
+    def fit(self, training_data, alg='random', fly=None):
         if alg == 'random':
             self.anchors = training_data[np.random.choice(len(training_data),
                                                           size=self.m,
@@ -53,6 +53,11 @@ class DistPerm:
             weights = self.occurence_weights(training_data).numpy()
             kmeans.fit(training_data.numpy(), sample_weight=weights)
             self.anchors = torch.from_numpy(kmeans.cluster_centers_)
+            self.is_trained = True
+            return self.anchors
+        elif alg == 'fly':
+            self.anchors = torch.from_numpy(fly).T
+            self.anchors = self.anchors.to(torch.float)
             self.is_trained = True
             return self.anchors
         else:
