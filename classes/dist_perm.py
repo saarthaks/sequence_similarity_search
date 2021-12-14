@@ -1,6 +1,8 @@
 import torch
 import numpy as np
 from sklearn.cluster import KMeans
+from scipy.spatial import ConvexHull
+import faiss
 
 class DistPerm:
     def __init__(self, m, k=None, dist='l2'):
@@ -48,6 +50,30 @@ class DistPerm:
             self.anchors = training_data[anchor_idx]
             self.is_trained = True
             return self.anchors
+        elif alg == 'kmeans':
+            data = training_data.numpy()
+            kmeans = faiss.Kmeans(int(data.shape[1]), int(self.m), niter=20, spherical=True)
+            kmeans.train(data)
+            self.anchors = torch.from_numpy(kmeans.centroids)
+            self.is_trained = True
+            return self.anchors
+        elif alg == 'hull':
+            data = training_data.numpy()
+            num_centroids = int(self.m // self.k)
+            kmeans = faiss.Kmeans(int(data.shape[1]), num_centroids, niter=20, spherical=True)
+            kmeans.train(data)
+            _, I = kmeans.index.search(data, 1)
+            anchors = []
+            for c in range(num_centroids):
+                idxs = (I[:,0] == c)
+                hull = ConvexHull(data[idxs])
+                hverts = np.random.permutation(hull.vertices)[:self.k]
+                print(hverts)
+                anchors.extend([data[v] for v in hverts])
+            self.anchors = torch.from_numpy(np.array(anchors))
+            print(self.anchors.shape)
+
+            return NotImplementedError
         elif alg == 'weighted':
             kmeans = KMeans(n_clusters=self.m)
             weights = self.occurence_weights(training_data).numpy()
@@ -66,18 +92,22 @@ class DistPerm:
         assert(self.is_trained)
 
         # compute distances
-        anchor_distances = self.dist_fn(database, self.anchors)
+        anchor_distances = self.dist_fn(database.cuda(), self.anchors[:, :self.m].cuda())
         # initialize rank vector index 
         # initialized to k, the number of anchors used for similarity search
         self.rank_index = self.k*torch.ones((database.shape[0], self.m), dtype=torch.float)
         # find closest k anchor ids, in order from closest to farthest
-        closest_anchor_ids = torch.argsort(anchor_distances, dim=1)[:, :self.k]
+        closest_anchor_ids = torch.argsort(anchor_distances, dim=1).cpu()[:, :self.k]
         
         db_ids = torch.arange(database.shape[0])[:,None]
         # assign ranks from [0,k-1] to closest k anchors
         self.rank_index[db_ids, closest_anchor_ids] = torch.arange(self.k, dtype=torch.float)
 
         return self.rank_index
+
+    def clear(self):
+        self.rank_index = []
+        return
 
     def search(self, query, num):
         '''
@@ -88,12 +118,12 @@ class DistPerm:
         assert(self.is_trained)
 
         # compute distances
-        q_dist = self.dist_fn(query, self.anchors)
+        q_dist = self.dist_fn(query.cuda(), self.anchors.cuda())
         # initialize query rankings
         # initialized to k, the number of anchors used for similarity search
         query_ranks = self.k*torch.ones((query.shape[0], self.m), dtype=torch.float)
         # find closest k anchor ids, in order from closest to farthest
-        closest_anchor_ids = torch.argsort(q_dist, dim=1)[:, :self.k]
+        closest_anchor_ids = torch.argsort(q_dist, dim=1)[:, :self.k].cpu()
 
         q_ids = torch.arange(query.shape[0])[:,None]
         # assign ranks from [0, k-1] to closest k anchors
@@ -101,11 +131,11 @@ class DistPerm:
 
         # compute distances between rank vectors 
         # (L2 over rank vectors is equal to Spearman Rho Rank Correlation)
-        db_dists = torch.cdist(self.rank_index, query_ranks, p=2)
+        db_dists = torch.cdist(self.rank_index.cuda(), query_ranks.cuda(), p=2)
         # find indices of closest 'num' datapoints in db for each query
         # with shape (query.shape[0], num)
-        closest_idx = torch.topk(db_dists, num, dim=0, largest=False)[1].transpose(0,1)
-
+        closest_idx = torch.topk(db_dists, num, dim=0, largest=False)[1].transpose(0,1).cpu()
+        #print(closest_idx[0])
         return closest_idx
 
     def farthest_first(self, X):

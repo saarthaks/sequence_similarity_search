@@ -31,7 +31,9 @@ def main():
     data_source = BERTDataset(file_q, file_db, n)
     db = data_source.generate_db().numpy()
 
-    ID_results = id_mle_estimator(db, k_list=list(2**np.arange(2,9)))
+    k_list = list(2**np.arange(2,9))
+    k_list.append(384)
+    ID_results = id_mle_estimator(db, k_list=k_list)
     x_dom = list(ID_results.keys())
     y = list(ID_results.values())
     print(y[-5:])
@@ -41,7 +43,7 @@ def main():
     plt.ylabel('ID')
     plt.semilogx()
     plt.title('Local Intrinsic Dim. Estimate for BERT Embeddings, N=%d' % n)
-    plt.savefig('./figures/BERT_ID2.png', bbox_inches='tight')
+    plt.savefig('./figures/BERT_ID4.png', bbox_inches='tight')
 
     # ID of GLoVE dataset
     n = 10000

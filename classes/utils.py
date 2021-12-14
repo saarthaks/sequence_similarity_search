@@ -1,8 +1,9 @@
 import numpy as np
+import faiss
 from sklearn.neighbors import NearestNeighbors
 
 def id_estimator(k_value, dataset_size, distances):
-    estimates = []
+    estimates = dataset_size*[0]
     for i in range(dataset_size):
         k_distances = np.array(distances[i])
         if np.all(k_distances[1:-1]) == False:
@@ -11,7 +12,7 @@ def id_estimator(k_value, dataset_size, distances):
         k_distances_normalized = np.array((k_value - 1)*[k_distances[-1]])/k_distances[1:-1]
         k_distances_normalized_log = np.log(k_distances_normalized)
         k_distance_id_estimate = (1/(k_value - 2)) * np.sum(k_distances_normalized_log, axis=-1)
-        estimates.append(k_distance_id_estimate)
+        estimates[i] = k_distance_id_estimate
 
     estimates_avg_id = (1/dataset_size) * np.sum( np.array(estimates) )
     id_estimated = 1/estimates_avg_id
@@ -22,6 +23,9 @@ def id_mle_estimator(dataset, k_list=[2,3,5,10,20]):
     id_estimates = { val:[] for val in k_list }
     dataset_size = dataset.shape[0]
 
+    #index = faiss.IndexFlatL2(dataset.shape[1])
+    #index.add(dataset)
+    #distances, indices = index.search(dataset, int(np.max(k_list)+1))
     classifier = NearestNeighbors(n_neighbors=max(k_list)+1, algorithm='ball_tree')
     classifier.fit(dataset)
 
@@ -45,3 +49,12 @@ def mean_avg_precision(all_found, all_true):
     avg_precisions = [avg_precision(f, t) for f, t in zip(all_found, all_true)]
 
     return np.mean(avg_precisions), np.std(avg_precisions)/np.sqrt(num_queries)
+
+def recall(found, truth):
+    R = len(truth)
+    return len(set(found).intersection(set(truth)))/R
+
+def mean_recall(all_found, all_true):
+    recalls = [recall(f,t) for f,t in zip(all_found, all_true)]
+    return np.mean(recalls), np.std(recalls)
+

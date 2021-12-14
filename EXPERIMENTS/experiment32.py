@@ -26,13 +26,13 @@ def main():
     datas = [np.array(db).astype(np.float32) for db in dbs]
     queries = data_source.generate_queries(num_queries)
     quers = np.array(queries).astype(np.float32)
-
+    
     trues = []
     for data in datas:
         index_l2 = faiss.IndexFlatL2(D)
         index_l2.add(data)
         trues.append(index_l2.search(quers, R)[1])
-
+    
     MAPs_dp = np.zeros((trials, len(ks), len(Rs)))
     MAPs_knn = np.zeros_like(MAPs_dp)
     MAPs_fft = np.zeros_like(MAPs_dp)
@@ -42,7 +42,7 @@ def main():
     #MAPs4 = len(ds)*[0]
     for tri in range(trials):
         for i,k in enumerate(ks):
-            index_dp = DistPerm(k**2//2, k=k)
+            index_dp = DistPerm(k**2//2, d=k)
             index_dp.fit(dbs[tri])
             index_dp.add(dbs[tri])
             found_dp = index_dp.search(queries, R).numpy()

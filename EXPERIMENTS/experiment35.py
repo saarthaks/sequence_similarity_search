@@ -9,7 +9,7 @@ from dist_perm import DistPerm
 import utils
 
 def main():
-
+    
     n = 10000
     D = 128
     num_queries = 50
@@ -27,11 +27,11 @@ def main():
     index_l2 = faiss.IndexFlatL2(D)
     index_l2.add(data)
     true = index_l2.search(quers, R)[1]
-
+    
     plt.figure(figsize=(8,5))
     for k in ks:
         num_anchs = (k*np.arange(1, k+1, 2)).astype(np.int)
-        index_dp = DistPerm(max(num_anchs), k=k)
+        index_dp = DistPerm(max(num_anchs), d=k)
         all_anchs = index_dp.fit(db)
 
         MAPs = np.zeros_like(num_anchs, dtype=np.float32)
@@ -44,7 +44,7 @@ def main():
             print('k=%d' % k, 'Num anchs: %d' % num, 'MAP: %.3f' % MAPs[i])
 
         plt.plot(num_anchs/k, MAPs, '--*', label='DP, k=%d'%k)
-
+    
     plt.xlabel('Total number of anchors [k]')
     plt.ylabel('Mean average precision')
     plt.title('BERT Dataset, N = 10000')

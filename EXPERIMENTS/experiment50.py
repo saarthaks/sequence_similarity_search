@@ -3,25 +3,26 @@ import matplotlib.pyplot as plt
 import torch
 from sklearn.neighbors import NearestNeighbors
 import faiss
-import lshfly
+from fly import fly
 
-from data_classes import GLOVEDataset
+from data_classes import BERTDataset
 from dist_perm import DistPerm
 import utils
 
 def main():
 
-    n = 10000
-    D = 300
+    n = 300000
+    D = 128
     trials = 5
     num_queries = 100
 
     Rs = [50, 100, 200]
     R = max(Rs)
-    ks = [8, 16, 48, 120]
+    ks = [8, 16, 32, 64]
 
-    file_db = './datasets/glove_6B_300d.pt'
-    data_source = GLOVEDataset(file_db, D, n)
+    file_q = './datasets/Q.pt'
+    file_db = './datasets/D.pt'
+    data_source = BERTDataset(file_q, file_db, n)
     dbs = [data_source.generate_db() for _ in range(trials)]
     datas = [np.array(db).astype(np.float32) for db in dbs]
     queries = data_source.generate_queries(num_queries)
@@ -35,7 +36,7 @@ def main():
     
     MAPs_dp = np.zeros((trials, len(ks), len(Rs)))
     MAPs_pq = np.zeros_like(MAPs_dp)
-    MAPs_lsh = np.zeros_like(MAPs_dp)
+    MAPs_dp2 = np.zeros_like(MAPs_dp)
     MAPs_fly = np.zeros_like(MAPs_dp)
 
     #MAPs2 = len(ds)*[0]
@@ -43,7 +44,7 @@ def main():
     #MAPs4 = len(ds)*[0]
     for tri in range(trials):
         for i,k in enumerate(ks):
-            index_dp = DistPerm(k**2 // 2, d=k)
+            index_dp = DistPerm(20*k, k=k)
             index_dp.fit(dbs[tri])
             index_dp.add(dbs[tri])
             found_dp = index_dp.search(queries, R).numpy()
@@ -56,17 +57,26 @@ def main():
             MAPs_pq[tri, i] = [utils.mean_avg_precision(found_pq[:,:r], trues[tri][:,:r])[0] for r in Rs]
 
             index_lsh = faiss.IndexLSH(D, k)
-            index_lsh.train(datas[tri])
-            index_lsh.add(datas[tri])
-            found_lsh = index_lsh.search(quers, R)[1]
-            MAPs_lsh[tri, i] = [utils.mean_avg_precision(found_lsh[:,:r], trues[tri][:,:r])[0] for r in Rs]
+            index_dp2 = DistPerm(20*k, k=k)
+            index_dp2.fit(dbs[tri], alg='kmeans')
+            index_dp2.add(dbs[tri])
+            found_dp2 = index_dp2.search(queries, R).numpy()
+            MAPs_dp2[tri, i] = [utils.mean_avg_precision(found_dp2[:,:r], trues[tri][:,:r])[0] for r in Rs]
 
-            index_fly = lshfly.flylsh(datas[tri], hash_length=k, sampling_ratio=0.1, embedding_size=20*k)
-            MAPs_fly[tri, i] = [index_fly.findmAP(nnn=r, n_points=num_queries) for r in Rs]
+            index_fly = fly(k, 20*k)
+            index_fly.fit(datas[tri], sampling_ratio=0.1)
+            index_fly.add(datas[tri])
+            found_fly = index_fly.search(quers, R)
+            MAPs_fly[tri, i] = [utils.mean_avg_precision(found_fly[:,:r], trues[tri][:,:r])[0] for r in Rs]
+
         if tri == 0:
+            print('DP')
             print(MAPs_dp[0])
+            print('DP-Km')
+            print(MAPs_dp2[0])
+            print('PQ')
             print(MAPs_pq[0])
-            print(MAPs_lsh[0])
+            print('Fly')
             print(MAPs_fly[0])
 
 
@@ -74,45 +84,44 @@ def main():
     plt.figure(figsize=(8,15))
     plt.subplot(311)
     width = 0.3
-    plt.bar(x_ticks - 0.45, np.mean(MAPs_lsh[:,:,0], axis=0), width, yerr=np.std(MAPs_lsh[:,:,0],axis=0), label='LSH')
-    plt.bar(x_ticks - 0.15, np.mean(MAPs_pq[:,:,0], axis=0), width, yerr=np.std(MAPs_pq[:,:,0],axis=0), label='PQ')
-    plt.bar(x_ticks + 0.15, np.mean(MAPs_fly[:,:,0], axis=0), width, yerr=np.std(MAPs_fly[:,:,0],axis=0), label='Fly')
-    plt.bar(x_ticks + 0.45, np.mean(MAPs_dp[:,:,0], axis=0), width, yerr=np.std(MAPs_dp[:,:,0],axis=0), label='DP')
-
+    plt.bar(x_ticks - 0.45, np.mean(MAPs_pq[:,:,0], axis=0), width, yerr=np.std(MAPs_pq[:,:,0],axis=0), label='PQ')
+    plt.bar(x_ticks - 0.15, np.mean(MAPs_fly[:,:,0], axis=0), width, yerr=np.std(MAPs_fly[:,:,0],axis=0), label='Fly')
+    plt.bar(x_ticks + 0.15, np.mean(MAPs_dp[:,:,0], axis=0), width, yerr=np.std(MAPs_dp[:,:,0],axis=0), label='DP')
+    plt.bar(x_ticks + 0.45, np.mean(MAPs_dp2[:,:,0], axis=0), width, yerr=np.std(MAPs_dp2[:,:,0],axis=0), label='DP-Km')
     plt.xticks(x_ticks, ks)
     plt.xlabel('Num. of Signals')
     plt.ylabel('Mean Average Precision')
-    plt.title('GLoVE Dataset (300-dim) with 10000 Entries, Retrieving Top-50 (0.5%)')
-    plt.ylim([0,1])
+    plt.title('BERT Dataset (128-dim) with 300,000 Entries, Retrieving Top-50 (0.016%)')
+    plt.ylim([0, 1])
     plt.legend()
 
     plt.subplot(312)
     width = 0.3
-    plt.bar(x_ticks - 0.45, np.mean(MAPs_lsh[:,:,1], axis=0), width, yerr=np.std(MAPs_lsh[:,:,1],axis=0), label='LSH')
-    plt.bar(x_ticks - 0.15, np.mean(MAPs_pq[:,:,1], axis=0), width, yerr=np.std(MAPs_pq[:,:,1],axis=0), label='PQ')
-    plt.bar(x_ticks + 0.15, np.mean(MAPs_fly[:,:,1], axis=0), width, yerr=np.std(MAPs_fly[:,:,1],axis=0), label='Fly')
-    plt.bar(x_ticks + 0.45, np.mean(MAPs_dp[:,:,1], axis=0), width, yerr=np.std(MAPs_dp[:,:,1],axis=0), label='DP')
+    plt.bar(x_ticks - 0.45, np.mean(MAPs_pq[:,:,1], axis=0), width, yerr=np.std(MAPs_pq[:,:,1],axis=0), label='PQ')
+    plt.bar(x_ticks - 0.15, np.mean(MAPs_fly[:,:,1], axis=0), width, yerr=np.std(MAPs_fly[:,:,1],axis=0), label='Fly')
+    plt.bar(x_ticks + 0.15, np.mean(MAPs_dp[:,:,1], axis=0), width, yerr=np.std(MAPs_dp[:,:,1],axis=0), label='DP')
+    plt.bar(x_ticks + 0.45, np.mean(MAPs_dp2[:,:,1], axis=0), width, yerr=np.std(MAPs_dp2[:,:,1],axis=0), label='DP-Km')
     plt.xticks(x_ticks, ks)
     plt.xlabel('Num. of Signals')
     plt.ylabel('Mean Average Precision')
-    plt.title('GLoVE Dataset (300-dim) with 10000 Entries, Retrieving Top-100 (1%)')
-    plt.ylim([0,1])
+    plt.title('BERT Dataset (128-dim) with 300,000 Entries, Retrieving Top-100 (0.033%)')
+    plt.ylim([0, 1])
     plt.legend()
 
     plt.subplot(313)
     width = 0.3
-    plt.bar(x_ticks - 0.45, np.mean(MAPs_lsh[:,:,2], axis=0), width, yerr=np.std(MAPs_lsh[:,:,2],axis=0), label='LSH')
-    plt.bar(x_ticks - 0.15, np.mean(MAPs_pq[:,:,2], axis=0), width, yerr=np.std(MAPs_pq[:,:,2],axis=0), label='PQ')
-    plt.bar(x_ticks + 0.15, np.mean(MAPs_fly[:,:,2], axis=0), width, yerr=np.std(MAPs_fly[:,:,2],axis=0), label='Fly')
-    plt.bar(x_ticks + 0.45, np.mean(MAPs_dp[:,:,2], axis=0), width, yerr=np.std(MAPs_dp[:,:,2],axis=0), label='DP')
+    plt.bar(x_ticks - 0.45, np.mean(MAPs_pq[:,:,2], axis=0), width, yerr=np.std(MAPs_pq[:,:,2],axis=0), label='PQ')
+    plt.bar(x_ticks - 0.15, np.mean(MAPs_fly[:,:,2], axis=0), width, yerr=np.std(MAPs_fly[:,:,2],axis=0), label='Fly')
+    plt.bar(x_ticks + 0.15, np.mean(MAPs_dp[:,:,2], axis=0), width, yerr=np.std(MAPs_dp[:,:,2],axis=0), label='DP')
+    plt.bar(x_ticks + 0.45, np.mean(MAPs_dp2[:,:,2], axis=0), width, yerr=np.std(MAPs_dp2[:,:,2],axis=0), label='DP-Km')
     plt.xticks(x_ticks, ks)
     plt.xlabel('Num. of Signals')
     plt.ylabel('Mean Average Precision')
-    plt.title('GLoVE Dataset (300-dim) with 10000 Entries, Retrieving Top-200 (2%)')
-    plt.ylim([0,1])
+    plt.title('BERT Dataset (128-dim) with 300,000 Entries, Retrieving Top-200 (0.066%)')
+    plt.ylim([0, 1])
     plt.legend()
 
-    plt.savefig('./figures/experiment27.png', bbox_inches='tight')
+    plt.savefig('./figures/experiment50.png', bbox_inches='tight')
 
 
 
