@@ -9,7 +9,7 @@ from functools import reduce
 from sklearn.cluster import KMeans
 #from bokeh.plotting import figure,output_file,output_notebook,show
 #import bokeh
-np.random.seed(30)
+# np.random.seed(112232)
 
 class Dataset(object):
     def __init__(self,name,path='./datasets/'):
@@ -121,7 +121,9 @@ class LSH(object):
     def query(self,qidx,nnn,not_olap=False):
         L1_distances=np.sum(np.abs(self.hashes[qidx,:]^self.hashes),axis=1)
         #np.sum(np.bitwise_xor(self.hashes[qidx,:],self.hashes),axis=1)
+        # print(nnn)
         nnn=min(self.hashes.shape[0],nnn)
+
         if not_olap:
             no_overlaps=np.sum(L1_distances==self.maxl1distance)
             return no_overlaps
@@ -133,18 +135,14 @@ class LSH(object):
 
     def query_2(self,qidx,nnn,not_olap=False):
         L1_distances=np.sum(np.abs(self.queries_hashes[qidx,:]^self.hashes),axis=1)
-        # print(L1_distances)
-        # print(L1_distances.shape)
-        #np.sum(np.bitwise_xor(self.hashes[qidx,:],self.hashes),axis=1)
-        nnn=min(self.queries_hashes.shape[0],nnn)
+        # print(nnn)
+        # nnn=min(self.queries_hashes.shape[0],nnn)
         if not_olap:
             no_overlaps=np.sum(L1_distances==self.maxl1distance)
             return no_overlaps
 
         NNs=L1_distances.argsort()
         NNs=NNs[(NNs != qidx)][:nnn]
-        # print(NNs.shape)
-        #print(L1_distances[NNs]) #an interesting property of this hash is that the L1 distances are always even
         return NNs
 
     def true_nns(self,qidx,nnn):
@@ -166,8 +164,7 @@ class LSH(object):
         tnns=np.sum((self.data-sample)**2,axis=1).argsort()[:nnn]
         # tnns=tnns[(tnns!=qidx)]
         if nnn<self.data.shape[0]:
-            # print(len(tnns))
-            assert len(tnns)==nnn, 'nnn={}'.format(nnn)
+            assert len(tnns)==nnn, 'tnn={}, nnn={}'.format(len(tnns), nnn)
         return tnns
         
     def construct_true_nns_2(self,indices,nnn):
@@ -179,6 +176,8 @@ class LSH(object):
     def AP(self,predictions,truth):
         assert len(predictions)==len(truth) or len(predictions)==self.hashes.shape[0]
         #removed conversion to list in next line:
+        # print(len(predictions))
+        # print(len(truth))
         precisions=[len((set(predictions[:idx]).intersection(set(truth[:idx]))))/idx for\
                     idx in range(1,len(truth)+1)]
         return np.mean(precisions)
@@ -186,8 +185,8 @@ class LSH(object):
     def AP_2(self,predictions,truth):
         # assert len(predictions)==len(truth) or len(predictions)==self.hashes.shape[0]
         #removed conversion to list in next line:
-        # print(predictions)
-        # print(truth)
+        # print(len(predictions))
+        # print(len(truth))
         precisions=[len((set(predictions[:idx]).intersection(set(truth[:idx]))))/idx for\
                     idx in range(1,len(truth)+1)]
         return np.mean(precisions)
@@ -241,15 +240,8 @@ class LSH(object):
         all_NNs=self.construct_true_nns_2(indices,nnn)
         self.allAPs=[]
         for eidx,didx in enumerate(indices):
-            #eidx: enumeration id, didx: index of sample in self.data
             this_nns=self.query_2(didx,nnn)
-            # print(len(this_nns))
-            # print(len(all_NNs[eidx,:]))
             this_AP=self.AP_2(list(this_nns),list(all_NNs[eidx,:]))
-            # print(this_nns)
-            # print(all_NNs[eidx,:])
-            # return
-            #print(this_AP)
             self.allAPs.append(this_AP)
         return np.mean(self.allAPs)
 

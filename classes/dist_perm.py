@@ -41,6 +41,7 @@ class DistPerm:
             self.anchors = training_data[np.random.choice(len(training_data),
                                                           size=self.m,
                                                           replace=False)]
+            print(self.anchors.shape)
             self.is_trained = True
             return self.anchors
         elif alg == 'fft':
@@ -92,6 +93,7 @@ class DistPerm:
         # require .fit() to select anchors
         assert(self.is_trained)
 
+
         # compute distances
         q_dist = self.dist_fn(query, self.anchors)
         # initialize query rankings
@@ -106,12 +108,26 @@ class DistPerm:
 
         # compute distances between rank vectors 
         # (L2 over rank vectors is equal to Spearman Rho Rank Correlation)
-        db_dists = torch.cdist(self.rank_index, query_ranks, p=2)
+
+        # db_dists = torch.cdist(self.rank_index, query_ranks, p=2)
+        # -X @ torch.transpose(Y, dim0=0, dim1=1).float()
+        # print(self.rank_index.shape)
+        # print(query_ranks.shape)
+        # print(db_dists.shape)
+        # db_dists = -self.rank_index @ torch.transpose(query_ranks, dim0=0, dim1=1).float()
+        # print('rank index' + str(self.rank_index.shape))
+        # print('query ranks' + str(query_ranks.shape))
+        # print(db_dists.shape)
+
         # find indices of closest 'num' datapoints in db for each query
         # with shape (query.shape[0], num)
-        closest_idx = torch.topk(db_dists, num, dim=0, largest=False)[1].transpose(0,1)
+        db_dists = torch.cdist(self.rank_index, query_ranks, p=1).float()
+        closest_idx = torch.topk(db_dists, num, dim=0, largest=False)
+        # print(closest_idx.shape)
+        # closest_idx = db_dists.argsort(axis=1)[:,:num]
+        # print(closest_idx)
 
-        return closest_idx
+        return closest_idx[1].transpose(0,1), query_ranks, closest_idx[0]
 
     def farthest_first(self, X):
         n = X.shape[0]

@@ -37,7 +37,7 @@ def main():
         index_dp.add(db)
         found_dp = index_dp.search(queries, R).numpy()
         MAPs_dp[i] = utils.mean_avg_precision(found_dp, true)[0]
-
+        print(index_fly.hashes)
         index_fly = lshfly.flylsh(data, hash_length=k, sampling_ratio=0.1, embedding_size=num)
         MAPs_fly[i] = index_fly.findmAP(nnn=R, n_points=num_queries)
 
