@@ -3,17 +3,22 @@
 
 # In[1]:
 
+import logging
+import matplotlib.pyplot as plt
+import argparse
 
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
 import sys
-sys.path.insert(1, '/Users/derekhuang/Documents/Research/sequence_similarity_search/classes')
-sys.path.insert(1, '/Users/derekhuang/Documents/Research/fast-soft-sort/fast_soft_sort')
+# sys.path.insert(1, '/Users/derekhuang/Documents/Research/sequence_similarity_search/classes')
+sys.path.insert(1, '/home/users/huangda/sequence_similarity_search/classes')
+
+# sys.path.insert(1, '/Users/derekhuang/Documents/Research/fast-soft-sort/fast_soft_sort')
 from data_classes import BERTDataset
 from dist_perm import DistPerm
 import utils
-import pytorch_ops
+# import pytorch_ops
 import torchsort
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
@@ -23,7 +28,7 @@ def soft_rank(array):
    return torchsort.soft_rank(-1 * array, regularization_strength=.000001)
 
 class AnchorNet(nn.Module):
-    def __init__(self, num_anchs, d, k, hidden=128, hidden2=128, out=128):
+    def __init__(self, num_anchs, d, k, out=128, method="plane"):
         super(AnchorNet, self).__init__()
         self.transform = nn.Sequential(
           # nn.Linear(d, hidden),
@@ -33,7 +38,7 @@ class AnchorNet(nn.Module):
           # nn.Linear(hidden, hidden2),
           # nn.Linear(hidden2, out)
         )
-        self.anchors = nn.Linear(out, num_anchs)
+        self.anchors = nn.Linear(d, num_anchs)
         self.k = k
 
     def forward(self, data, query):
@@ -41,14 +46,31 @@ class AnchorNet(nn.Module):
         # query_out = self.transform(query)
         # data_rank = torch.clamp(soft_rank(self.anchors(data_out)), max=k)
         # query_rank = torch.clamp(soft_rank(self.anchors(query_out)), max=k)
-        data_rank = soft_rank(self.anchors(data))
-        query_rank = soft_rank(self.anchors(query))
-        out = torch.matmul(query_rank, data_rank.T)
+        # data_rank = soft_rank(self.anchors(data))
+        # query_rank = soft_rank(self.anchors(query))
+        if method=='plane':
+            data_rank = self.anchors(data)
+            query_rank = self.anchors(query)
+            anchor_norm = torch.norm(self.anchors.weight, dim=0)
+            data_rank = soft_rank(torch.div(data_rank, anchor_norm))
+            query_rank = soft_rank(torch.div(query_rank, anchor_norm))
+            out = torch.matmul(query_rank, data_rank.T)
+        elif method=='anchor':
+            data_rank = soft_rank(self.anchors(data))
+            query_rank = soft_rank(self.anchors(query))
+            out = torch.matmul(query_rank, data_rank.T)
         return out
 
     def evaluate(self, data, query):
-        q_dist = self.anchors(self.transform(query))
-        d_dist = self.anchors(self.transform(data))
+        if method=='plane':
+            data_rank = self.anchors(data)
+            query_rank = self.anchors(query)
+            anchor_norm = torch.norm(self.anchors.weight, dim=0)
+            d_dist = torch.div(data_rank, anchor_norm)
+            q_dist = torch.div(query_rank, anchor_norm)
+        elif method=='anchor':
+            q_dist = self.anchors(query)
+            d_dist = self.anchors(data)
 
         query_ranks = self.k*torch.ones(q_dist.shape, dtype=torch.float)
         data_ranks = self.k*torch.ones(d_dist.shape, dtype=torch.float)
@@ -69,21 +91,37 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
 
-# In[ ]:
+def setup_logger(logger):
+    logger.setLevel(logging.INFO)
+    if logger.hasHandlers():
+        logger.handlers.clear()
+    log_formatter = logging.Formatter("[%(thread)s] %(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
+def get_parser():
+    '''get_parser returns the arg parse object, for use by an external application (and this script)
+    '''
+    parser = argparse.ArgumentParser(
+    description="This is a description of your tool's functionality.")
+    parser.add_argument("--anchor", dest='anchor', help="number of anchors/hyperplanes", type=int, default=128)
+    parser.add_argument("--k", dest='k', help="how many to keep", type=int, default=32)
+    parser.add_argument("--method", dest='method', help="plane or anchor", type=str, default='plane')
 
+    return parser
 
+parser = get_parser()
+try:
+    args = parser.parse_args()
+except:
+    parser.print_help()
+    sys.exit(0)
 
-
-# In[2]:
-
-
-n = 200000
+n = 500000
 D = 128
 num_queries = 3200
-num_anchors = 128
-R = 100
-k = 16
+num_anchors = args.anchor
+k = args.k
+method = args.method
+lr=.0001
 
 
 # In[3]:
@@ -96,6 +134,14 @@ db = data_source.generate_db()
 data = np.array(db).astype(np.float32)
 queries = data_source.generate_queries(num_queries)
 quers = np.array(queries).astype(np.float32)
+
+session_name = "anchor_{}_k_{}_lr_{}_method_{}.pt".format(num_anchors, k, lr, method)
+
+logger = logging.getLogger()
+setup_logger(logger)
+logging.basicConfig(filename='diffsort/{}.log'.format(session_name), level=logging.DEBUG)
+
+logger.info("n: {} D: {} queries: {} anchors: {} k: {} method: {} lr: {}".format(n, D, num_queries, num_anchors, k, method, lr))
 
 
 # In[4]:
@@ -147,16 +193,16 @@ query_data_val_loader = torch.utils.data.DataLoader(dataset=query_datasets['val'
 
 # The train docs
 docs_loader = torch.utils.data.DataLoader(dataset=doc_datasets['train'], 
-                                           batch_size=5000, 
+                                           batch_size=25000, 
                                            shuffle=False)
 
 # The test docs
 docs_test_loader = torch.utils.data.DataLoader(dataset=doc_datasets['test'], 
-                                           batch_size=5000, 
+                                           batch_size=25000, 
                                            shuffle=False)
 
 docs_val_loader = torch.utils.data.DataLoader(dataset=doc_datasets['val'], 
-                                           batch_size=5000, 
+                                           batch_size=25000, 
                                            shuffle=False)
 
 
@@ -193,9 +239,8 @@ def return_loader(d, ret):
 # In[7]:
 
 
-model = AnchorNet(num_anchors, D, k).to(device)
+model = AnchorNet(num_anchors, D, k, method=method).to(device)
 criterion = nn.CrossEntropyLoss()
-lr=.0001
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)  
 
 
@@ -219,15 +264,16 @@ with torch.no_grad():
             total += l.size(0)
             correct += (predicted.to(device) == l.flatten()).sum().item()
 
-    print ('recall_test: {:.4f}'
+    logger.info ('recall_test: {:.4f}'
             .format(correct / total))
 
 
 # In[ ]:
 
-
+loss_steps = []
+test_steps = []
 # train
-for epoch in range(500):
+for epoch in range(200):
 #   Train step: get batch of train documents, then generate the dataloader containing 
 #   the train queries and the correct data labels
     train_correct = 0
@@ -251,7 +297,7 @@ for epoch in range(500):
         # print('Epoch [{}] Step [{}] Loss: {:.4f}'.format(epoch, step, loss.item()))
         
 #   Eval step: repeat but with the test documents and test queries      
-    if epoch % 5 == 0:
+    if epoch % 1 == 0:
         with torch.no_grad():
             correct = 0
             total = 0
@@ -285,16 +331,21 @@ for epoch in range(500):
                     predicted = outputs[0][:,0]
                     total_val += l.size(0)
                     correct_val += (predicted.to(device) == l.flatten()).sum().item()
+            
+            loss_steps.append(loss.item())
+            test_steps.append(test_loss.item())
 
-            print ('Epoch [{}], Loss: {:.4f}, Test Loss: {:.4f}, recall_train: {:.4f}, recall_test: {:.4f} recall_val: {:.4f}'
+            logger.info ('Epoch [{}], Loss: {:.4f}, Test Loss: {:.4f}, recall_train: {:.4f}, recall_test: {:.4f} recall_val: {:.4f}'
                     .format(epoch+1, loss.item(), test_loss.item(), train_correct / train_total, correct / total, correct_val / total_val))
+plt.figure()
+plt.plot(loss_steps)
+plt.title('Training loss')
+plt.savefig('diffsort/{}_train_loss.png'.format(session_name))
+plt.figure()
+plt.plot(test_steps)
+plt.title('Test loss')
+plt.savefig('diffsort/{}_test_loss.png'.format(session_name))
 
-# # # Save the model checkpoint
-#     if epoch % 20 == 0:
-#       torch.save(model.state_dict(), "/content/gdrive/MyDrive/ckpt/model_epoch_{}_anchor_{}_k_{}_lr_{}.pt".format(epoch, num_anchors, k, lr))
-
-
-# In[ ]:
 
 
 
