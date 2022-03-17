@@ -7,4 +7,6 @@
 ml py-pytorch/1.8
 ml py-matplotlib/3.4
 
-python3 diffsort.py --k 64 --method anchor
+python3 diffsort.py --anchor 1024 --k 1024 --method plane
+
+# python3 diffsort.py --anchor 128 --k 128 --method plane --top topk --r 10 --folder topk

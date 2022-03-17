@@ -1,0 +1,282 @@
+INFO:root:n: 500000 D: 128 queries: 3200 anchors: 128 k: 128 method: plane lr: 0.0001
+INFO:root:recall_test: 0.6375
+INFO:root:Epoch [1], Loss: 2102.6340, Test Loss: 1991.4443, recall_train: 0.6580, recall_test: 0.6344 recall_val: 0.6984
+INFO:root:Epoch [2], Loss: 2384.5508, Test Loss: 2001.6663, recall_train: 0.6603, recall_test: 0.6375 recall_val: 0.7031
+INFO:root:Epoch [3], Loss: 1695.2301, Test Loss: 1971.6272, recall_train: 0.6616, recall_test: 0.6438 recall_val: 0.6859
+INFO:root:Epoch [4], Loss: 1883.8877, Test Loss: 1952.5680, recall_train: 0.6633, recall_test: 0.6391 recall_val: 0.6844
+INFO:root:Epoch [5], Loss: 1882.1819, Test Loss: 1908.0449, recall_train: 0.6647, recall_test: 0.6312 recall_val: 0.6875
+INFO:root:Epoch [6], Loss: 1838.2699, Test Loss: 1918.5479, recall_train: 0.6672, recall_test: 0.6359 recall_val: 0.6891
+INFO:root:Epoch [7], Loss: 2056.5698, Test Loss: 1906.6061, recall_train: 0.6665, recall_test: 0.6359 recall_val: 0.6906
+INFO:root:Epoch [8], Loss: 1851.8135, Test Loss: 1907.5645, recall_train: 0.6686, recall_test: 0.6281 recall_val: 0.6953
+INFO:root:Epoch [9], Loss: 2191.3755, Test Loss: 1884.3879, recall_train: 0.6674, recall_test: 0.6266 recall_val: 0.7031
+INFO:root:Epoch [10], Loss: 1880.7021, Test Loss: 1895.1119, recall_train: 0.6689, recall_test: 0.6312 recall_val: 0.6953
+INFO:root:Epoch [11], Loss: 2282.7273, Test Loss: 1865.9714, recall_train: 0.6699, recall_test: 0.6312 recall_val: 0.7047
+INFO:root:Epoch [12], Loss: 1879.9778, Test Loss: 1848.5254, recall_train: 0.6726, recall_test: 0.6281 recall_val: 0.7047
+INFO:root:Epoch [13], Loss: 1785.3451, Test Loss: 1842.0703, recall_train: 0.6718, recall_test: 0.6188 recall_val: 0.7047
+INFO:root:Epoch [14], Loss: 1761.6803, Test Loss: 1804.3674, recall_train: 0.6733, recall_test: 0.6281 recall_val: 0.7031
+INFO:root:Epoch [15], Loss: 1986.3656, Test Loss: 1788.6492, recall_train: 0.6756, recall_test: 0.6328 recall_val: 0.6969
+INFO:root:Epoch [16], Loss: 2116.2019, Test Loss: 1825.1451, recall_train: 0.6771, recall_test: 0.6188 recall_val: 0.6969
+INFO:root:Epoch [17], Loss: 1715.0219, Test Loss: 1837.5264, recall_train: 0.6777, recall_test: 0.6219 recall_val: 0.6984
+INFO:root:Epoch [18], Loss: 1958.8066, Test Loss: 1774.5739, recall_train: 0.6793, recall_test: 0.6328 recall_val: 0.6844
+INFO:root:Epoch [19], Loss: 2028.9469, Test Loss: 1802.5144, recall_train: 0.6804, recall_test: 0.6438 recall_val: 0.6844
+INFO:root:Epoch [20], Loss: 1974.5452, Test Loss: 1817.0690, recall_train: 0.6792, recall_test: 0.6328 recall_val: 0.6875
+INFO:root:Epoch [21], Loss: 1774.1028, Test Loss: 1833.6877, recall_train: 0.6795, recall_test: 0.6266 recall_val: 0.7016
+INFO:root:Epoch [22], Loss: 1946.0017, Test Loss: 1750.7145, recall_train: 0.6814, recall_test: 0.6359 recall_val: 0.7047
+INFO:root:Epoch [23], Loss: 1567.0437, Test Loss: 1742.9880, recall_train: 0.6835, recall_test: 0.6328 recall_val: 0.7016
+INFO:root:Epoch [24], Loss: 1672.1602, Test Loss: 1759.3646, recall_train: 0.6852, recall_test: 0.6359 recall_val: 0.7094
+INFO:root:Epoch [25], Loss: 1660.3799, Test Loss: 1753.9049, recall_train: 0.6862, recall_test: 0.6203 recall_val: 0.6922
+INFO:root:Epoch [26], Loss: 1717.9489, Test Loss: 1739.9111, recall_train: 0.6872, recall_test: 0.6344 recall_val: 0.6969
+INFO:root:Epoch [27], Loss: 1349.3005, Test Loss: 1744.4391, recall_train: 0.6866, recall_test: 0.6172 recall_val: 0.6969
+INFO:root:Epoch [28], Loss: 1622.9342, Test Loss: 1703.2291, recall_train: 0.6877, recall_test: 0.6344 recall_val: 0.6937
+INFO:root:Epoch [29], Loss: 1909.7219, Test Loss: 1701.7810, recall_train: 0.6877, recall_test: 0.6344 recall_val: 0.6891
+INFO:root:Epoch [30], Loss: 1588.0997, Test Loss: 1691.7432, recall_train: 0.6890, recall_test: 0.6438 recall_val: 0.6953
+INFO:root:Epoch [31], Loss: 1333.2533, Test Loss: 1668.8978, recall_train: 0.6898, recall_test: 0.6422 recall_val: 0.7031
+INFO:root:Epoch [32], Loss: 1552.5830, Test Loss: 1670.1859, recall_train: 0.6888, recall_test: 0.6453 recall_val: 0.6922
+INFO:root:Epoch [33], Loss: 1672.4509, Test Loss: 1685.1920, recall_train: 0.6896, recall_test: 0.6359 recall_val: 0.6828
+INFO:root:Epoch [34], Loss: 1405.2100, Test Loss: 1688.6687, recall_train: 0.6937, recall_test: 0.6359 recall_val: 0.6891
+INFO:root:Epoch [35], Loss: 1659.8763, Test Loss: 1705.3627, recall_train: 0.6915, recall_test: 0.6234 recall_val: 0.6906
+INFO:root:Epoch [36], Loss: 1831.1016, Test Loss: 1692.3890, recall_train: 0.6910, recall_test: 0.6266 recall_val: 0.6828
+INFO:root:Epoch [37], Loss: 1494.1586, Test Loss: 1720.2142, recall_train: 0.6923, recall_test: 0.6266 recall_val: 0.6781
+INFO:root:Epoch [38], Loss: 1794.2914, Test Loss: 1747.2269, recall_train: 0.6924, recall_test: 0.6250 recall_val: 0.6781
+INFO:root:Epoch [39], Loss: 1565.4631, Test Loss: 1734.8896, recall_train: 0.6898, recall_test: 0.6125 recall_val: 0.6859
+INFO:root:Epoch [40], Loss: 1501.3754, Test Loss: 1709.5261, recall_train: 0.6894, recall_test: 0.6266 recall_val: 0.6750
+INFO:root:Epoch [41], Loss: 1172.0676, Test Loss: 1723.3594, recall_train: 0.6906, recall_test: 0.6266 recall_val: 0.6719
+INFO:root:Epoch [42], Loss: 1377.0383, Test Loss: 1699.4006, recall_train: 0.6927, recall_test: 0.6297 recall_val: 0.6969
+INFO:root:Epoch [43], Loss: 1513.9733, Test Loss: 1672.2354, recall_train: 0.6937, recall_test: 0.6422 recall_val: 0.6953
+INFO:root:Epoch [44], Loss: 1661.0264, Test Loss: 1714.4006, recall_train: 0.6935, recall_test: 0.6359 recall_val: 0.6813
+INFO:root:Epoch [45], Loss: 1327.4899, Test Loss: 1698.5153, recall_train: 0.6949, recall_test: 0.6172 recall_val: 0.6969
+INFO:root:Epoch [46], Loss: 1704.2699, Test Loss: 1659.6023, recall_train: 0.6964, recall_test: 0.6250 recall_val: 0.6937
+INFO:root:Epoch [47], Loss: 1304.3756, Test Loss: 1670.7727, recall_train: 0.6986, recall_test: 0.6297 recall_val: 0.6922
+INFO:root:Epoch [48], Loss: 1412.0117, Test Loss: 1641.8844, recall_train: 0.6998, recall_test: 0.6312 recall_val: 0.6922
+INFO:root:Epoch [49], Loss: 1464.5376, Test Loss: 1633.4637, recall_train: 0.6990, recall_test: 0.6172 recall_val: 0.6953
+INFO:root:Epoch [50], Loss: 1264.9923, Test Loss: 1693.2922, recall_train: 0.6989, recall_test: 0.6234 recall_val: 0.6953
+INFO:root:Epoch [51], Loss: 1401.4039, Test Loss: 1705.1461, recall_train: 0.6996, recall_test: 0.6281 recall_val: 0.6859
+INFO:root:Epoch [52], Loss: 1500.7244, Test Loss: 1734.6650, recall_train: 0.7007, recall_test: 0.6266 recall_val: 0.6875
+INFO:root:Epoch [53], Loss: 1371.4535, Test Loss: 1723.1527, recall_train: 0.7013, recall_test: 0.6156 recall_val: 0.6906
+INFO:root:Epoch [54], Loss: 1184.0009, Test Loss: 1727.3611, recall_train: 0.7015, recall_test: 0.6172 recall_val: 0.6953
+INFO:root:Epoch [55], Loss: 1447.3757, Test Loss: 1736.3542, recall_train: 0.7005, recall_test: 0.6234 recall_val: 0.6953
+INFO:root:Epoch [56], Loss: 1209.5082, Test Loss: 1697.3199, recall_train: 0.7024, recall_test: 0.6281 recall_val: 0.6969
+INFO:root:Epoch [57], Loss: 1417.5410, Test Loss: 1688.1100, recall_train: 0.7033, recall_test: 0.6312 recall_val: 0.6891
+INFO:root:Epoch [58], Loss: 1646.2865, Test Loss: 1648.5576, recall_train: 0.7033, recall_test: 0.6156 recall_val: 0.7016
+INFO:root:Epoch [59], Loss: 1490.5481, Test Loss: 1633.6729, recall_train: 0.7042, recall_test: 0.6328 recall_val: 0.7000
+INFO:root:Epoch [60], Loss: 1554.3279, Test Loss: 1621.6022, recall_train: 0.7076, recall_test: 0.6281 recall_val: 0.6953
+INFO:root:Epoch [61], Loss: 1315.5264, Test Loss: 1672.7754, recall_train: 0.7068, recall_test: 0.6438 recall_val: 0.7016
+INFO:root:Epoch [62], Loss: 1253.3160, Test Loss: 1688.9762, recall_train: 0.7080, recall_test: 0.6406 recall_val: 0.6969
+INFO:root:Epoch [63], Loss: 1251.9860, Test Loss: 1708.2590, recall_train: 0.7059, recall_test: 0.6484 recall_val: 0.7047
+INFO:root:Epoch [64], Loss: 1423.5154, Test Loss: 1681.5787, recall_train: 0.7073, recall_test: 0.6438 recall_val: 0.6828
+INFO:root:Epoch [65], Loss: 1398.6642, Test Loss: 1675.1836, recall_train: 0.7067, recall_test: 0.6391 recall_val: 0.6906
+INFO:root:Epoch [66], Loss: 1549.4506, Test Loss: 1666.9154, recall_train: 0.7076, recall_test: 0.6422 recall_val: 0.6969
+INFO:root:Epoch [67], Loss: 1464.0808, Test Loss: 1726.2546, recall_train: 0.7071, recall_test: 0.6328 recall_val: 0.6844
+INFO:root:Epoch [68], Loss: 1408.2094, Test Loss: 1715.2416, recall_train: 0.7096, recall_test: 0.6406 recall_val: 0.6953
+INFO:root:Epoch [69], Loss: 1330.0359, Test Loss: 1732.5000, recall_train: 0.7088, recall_test: 0.6328 recall_val: 0.7047
+INFO:root:Epoch [70], Loss: 1320.6340, Test Loss: 1689.7551, recall_train: 0.7104, recall_test: 0.6375 recall_val: 0.7016
+INFO:root:Epoch [71], Loss: 1438.3528, Test Loss: 1673.0133, recall_train: 0.7094, recall_test: 0.6422 recall_val: 0.6922
+INFO:root:Epoch [72], Loss: 1539.4301, Test Loss: 1752.9342, recall_train: 0.7122, recall_test: 0.6391 recall_val: 0.6984
+INFO:root:Epoch [73], Loss: 1375.5823, Test Loss: 1738.0580, recall_train: 0.7094, recall_test: 0.6297 recall_val: 0.6937
+INFO:root:Epoch [74], Loss: 1514.8461, Test Loss: 1708.6605, recall_train: 0.7108, recall_test: 0.6188 recall_val: 0.7063
+INFO:root:Epoch [75], Loss: 1464.2621, Test Loss: 1768.5739, recall_train: 0.7119, recall_test: 0.6281 recall_val: 0.7156
+INFO:root:Epoch [76], Loss: 1419.0742, Test Loss: 1776.7740, recall_train: 0.7142, recall_test: 0.6484 recall_val: 0.7188
+INFO:root:Epoch [77], Loss: 1055.0681, Test Loss: 1699.0365, recall_train: 0.7153, recall_test: 0.6391 recall_val: 0.7125
+INFO:root:Epoch [78], Loss: 1476.8213, Test Loss: 1740.6807, recall_train: 0.7145, recall_test: 0.6484 recall_val: 0.7156
+INFO:root:Epoch [79], Loss: 1229.9846, Test Loss: 1714.6471, recall_train: 0.7124, recall_test: 0.6516 recall_val: 0.7047
+INFO:root:Epoch [80], Loss: 1551.7148, Test Loss: 1703.6976, recall_train: 0.7114, recall_test: 0.6484 recall_val: 0.7203
+INFO:root:Epoch [81], Loss: 1499.0504, Test Loss: 1688.9225, recall_train: 0.7121, recall_test: 0.6500 recall_val: 0.7266
+INFO:root:Epoch [82], Loss: 920.0309, Test Loss: 1702.0479, recall_train: 0.7106, recall_test: 0.6562 recall_val: 0.7188
+INFO:root:Epoch [83], Loss: 1250.4495, Test Loss: 1691.3938, recall_train: 0.7084, recall_test: 0.6344 recall_val: 0.7250
+INFO:root:Epoch [84], Loss: 1203.6044, Test Loss: 1695.7244, recall_train: 0.7122, recall_test: 0.6469 recall_val: 0.7172
+INFO:root:Epoch [85], Loss: 1136.1580, Test Loss: 1686.8629, recall_train: 0.7135, recall_test: 0.6562 recall_val: 0.7172
+INFO:root:Epoch [86], Loss: 1136.5592, Test Loss: 1689.5297, recall_train: 0.7135, recall_test: 0.6578 recall_val: 0.7203
+INFO:root:Epoch [87], Loss: 1203.7039, Test Loss: 1633.6477, recall_train: 0.7131, recall_test: 0.6469 recall_val: 0.7203
+INFO:root:Epoch [88], Loss: 1375.5334, Test Loss: 1660.3092, recall_train: 0.7122, recall_test: 0.6375 recall_val: 0.7219
+INFO:root:Epoch [89], Loss: 1156.8787, Test Loss: 1649.6439, recall_train: 0.7126, recall_test: 0.6359 recall_val: 0.7328
+INFO:root:Epoch [90], Loss: 975.4000, Test Loss: 1622.7126, recall_train: 0.7135, recall_test: 0.6391 recall_val: 0.7312
+INFO:root:Epoch [91], Loss: 1098.2795, Test Loss: 1623.2231, recall_train: 0.7141, recall_test: 0.6359 recall_val: 0.7328
+INFO:root:Epoch [92], Loss: 1259.6403, Test Loss: 1654.6068, recall_train: 0.7157, recall_test: 0.6328 recall_val: 0.7359
+INFO:root:Epoch [93], Loss: 1099.4879, Test Loss: 1664.5153, recall_train: 0.7148, recall_test: 0.6359 recall_val: 0.7359
+INFO:root:Epoch [94], Loss: 1131.7584, Test Loss: 1618.9705, recall_train: 0.7159, recall_test: 0.6359 recall_val: 0.7375
+INFO:root:Epoch [95], Loss: 1094.8459, Test Loss: 1686.6804, recall_train: 0.7164, recall_test: 0.6438 recall_val: 0.7328
+INFO:root:Epoch [96], Loss: 1203.7615, Test Loss: 1727.2803, recall_train: 0.7179, recall_test: 0.6391 recall_val: 0.7469
+INFO:root:Epoch [97], Loss: 1183.7722, Test Loss: 1713.6439, recall_train: 0.7167, recall_test: 0.6297 recall_val: 0.7359
+INFO:root:Epoch [98], Loss: 837.9766, Test Loss: 1694.6439, recall_train: 0.7176, recall_test: 0.6453 recall_val: 0.7328
+INFO:root:Epoch [99], Loss: 1379.6853, Test Loss: 1690.6449, recall_train: 0.7167, recall_test: 0.6391 recall_val: 0.7281
+INFO:root:Epoch [100], Loss: 1144.6243, Test Loss: 1670.7207, recall_train: 0.7171, recall_test: 0.6531 recall_val: 0.7219
+INFO:root:Epoch [101], Loss: 1125.3624, Test Loss: 1665.4619, recall_train: 0.7186, recall_test: 0.6516 recall_val: 0.7328
+INFO:root:Epoch [102], Loss: 1049.2386, Test Loss: 1620.9449, recall_train: 0.7188, recall_test: 0.6484 recall_val: 0.7281
+INFO:root:Epoch [103], Loss: 1119.6686, Test Loss: 1665.8748, recall_train: 0.7200, recall_test: 0.6656 recall_val: 0.7438
+INFO:root:Epoch [104], Loss: 1110.3578, Test Loss: 1689.0984, recall_train: 0.7207, recall_test: 0.6438 recall_val: 0.7219
+INFO:root:Epoch [105], Loss: 995.8160, Test Loss: 1731.0533, recall_train: 0.7204, recall_test: 0.6484 recall_val: 0.7312
+INFO:root:Epoch [106], Loss: 1039.1106, Test Loss: 1742.9187, recall_train: 0.7230, recall_test: 0.6438 recall_val: 0.7063
+INFO:root:Epoch [107], Loss: 1083.4545, Test Loss: 1762.6833, recall_train: 0.7220, recall_test: 0.6266 recall_val: 0.7203
+INFO:root:Epoch [108], Loss: 1164.7646, Test Loss: 1707.5970, recall_train: 0.7242, recall_test: 0.6391 recall_val: 0.7281
+INFO:root:Epoch [109], Loss: 1029.8954, Test Loss: 1717.3005, recall_train: 0.7254, recall_test: 0.6422 recall_val: 0.7391
+INFO:root:Epoch [110], Loss: 1360.5841, Test Loss: 1708.8865, recall_train: 0.7244, recall_test: 0.6344 recall_val: 0.7422
+INFO:root:Epoch [111], Loss: 941.5349, Test Loss: 1731.9875, recall_train: 0.7262, recall_test: 0.6391 recall_val: 0.7266
+INFO:root:Epoch [112], Loss: 1137.2100, Test Loss: 1719.1516, recall_train: 0.7236, recall_test: 0.6594 recall_val: 0.7453
+INFO:root:Epoch [113], Loss: 993.3029, Test Loss: 1722.2844, recall_train: 0.7238, recall_test: 0.6562 recall_val: 0.7266
+INFO:root:Epoch [114], Loss: 899.1906, Test Loss: 1761.2836, recall_train: 0.7236, recall_test: 0.6484 recall_val: 0.7266
+INFO:root:Epoch [115], Loss: 896.4313, Test Loss: 1757.3519, recall_train: 0.7246, recall_test: 0.6578 recall_val: 0.7328
+INFO:root:Epoch [116], Loss: 1084.0020, Test Loss: 1751.5315, recall_train: 0.7250, recall_test: 0.6500 recall_val: 0.7297
+INFO:root:Epoch [117], Loss: 967.3643, Test Loss: 1726.6705, recall_train: 0.7254, recall_test: 0.6453 recall_val: 0.7188
+INFO:root:Epoch [118], Loss: 1073.2712, Test Loss: 1691.5023, recall_train: 0.7268, recall_test: 0.6484 recall_val: 0.7172
+INFO:root:Epoch [119], Loss: 1093.7317, Test Loss: 1637.8767, recall_train: 0.7278, recall_test: 0.6578 recall_val: 0.7359
+INFO:root:Epoch [120], Loss: 1151.6411, Test Loss: 1607.3147, recall_train: 0.7243, recall_test: 0.6562 recall_val: 0.7312
+INFO:root:Epoch [121], Loss: 1023.3756, Test Loss: 1644.9753, recall_train: 0.7269, recall_test: 0.6469 recall_val: 0.7234
+INFO:root:Epoch [122], Loss: 1091.8987, Test Loss: 1612.7517, recall_train: 0.7279, recall_test: 0.6531 recall_val: 0.7266
+INFO:root:Epoch [123], Loss: 1011.2697, Test Loss: 1584.1217, recall_train: 0.7276, recall_test: 0.6484 recall_val: 0.7156
+INFO:root:Epoch [124], Loss: 1087.4845, Test Loss: 1585.7865, recall_train: 0.7280, recall_test: 0.6375 recall_val: 0.7047
+INFO:root:Epoch [125], Loss: 1128.5061, Test Loss: 1608.6539, recall_train: 0.7282, recall_test: 0.6375 recall_val: 0.7125
+INFO:root:Epoch [126], Loss: 829.6844, Test Loss: 1576.8645, recall_train: 0.7289, recall_test: 0.6375 recall_val: 0.7266
+INFO:root:Epoch [127], Loss: 838.0524, Test Loss: 1559.3604, recall_train: 0.7279, recall_test: 0.6328 recall_val: 0.7031
+INFO:root:Epoch [128], Loss: 738.3461, Test Loss: 1557.9414, recall_train: 0.7298, recall_test: 0.6391 recall_val: 0.7141
+INFO:root:Epoch [129], Loss: 1210.9457, Test Loss: 1531.4314, recall_train: 0.7307, recall_test: 0.6406 recall_val: 0.7031
+INFO:root:Epoch [130], Loss: 1229.1736, Test Loss: 1532.2802, recall_train: 0.7293, recall_test: 0.6484 recall_val: 0.7078
+INFO:root:Epoch [131], Loss: 994.2952, Test Loss: 1538.8323, recall_train: 0.7300, recall_test: 0.6469 recall_val: 0.7109
+INFO:root:Epoch [132], Loss: 791.8669, Test Loss: 1485.8723, recall_train: 0.7309, recall_test: 0.6562 recall_val: 0.7203
+INFO:root:Epoch [133], Loss: 829.2419, Test Loss: 1498.7507, recall_train: 0.7289, recall_test: 0.6359 recall_val: 0.7281
+INFO:root:Epoch [134], Loss: 972.4264, Test Loss: 1552.9821, recall_train: 0.7298, recall_test: 0.6281 recall_val: 0.7219
+INFO:root:Epoch [135], Loss: 681.0252, Test Loss: 1573.7294, recall_train: 0.7311, recall_test: 0.6312 recall_val: 0.7094
+INFO:root:Epoch [136], Loss: 973.4681, Test Loss: 1565.6760, recall_train: 0.7288, recall_test: 0.6359 recall_val: 0.7188
+INFO:root:Epoch [137], Loss: 1045.5789, Test Loss: 1512.4418, recall_train: 0.7287, recall_test: 0.6266 recall_val: 0.7203
+INFO:root:Epoch [138], Loss: 932.3812, Test Loss: 1514.5277, recall_train: 0.7292, recall_test: 0.6312 recall_val: 0.7078
+INFO:root:Epoch [139], Loss: 771.9627, Test Loss: 1585.6368, recall_train: 0.7269, recall_test: 0.6406 recall_val: 0.7078
+INFO:root:Epoch [140], Loss: 787.5824, Test Loss: 1554.3684, recall_train: 0.7268, recall_test: 0.6391 recall_val: 0.7188
+INFO:root:Epoch [141], Loss: 1093.9895, Test Loss: 1560.1064, recall_train: 0.7276, recall_test: 0.6391 recall_val: 0.7188
+INFO:root:Epoch [142], Loss: 951.0392, Test Loss: 1511.7190, recall_train: 0.7293, recall_test: 0.6438 recall_val: 0.7172
+INFO:root:Epoch [143], Loss: 1088.2539, Test Loss: 1532.5095, recall_train: 0.7299, recall_test: 0.6453 recall_val: 0.7328
+INFO:root:Epoch [144], Loss: 1048.0725, Test Loss: 1509.8568, recall_train: 0.7327, recall_test: 0.6594 recall_val: 0.7219
+INFO:root:Epoch [145], Loss: 959.6862, Test Loss: 1568.5735, recall_train: 0.7319, recall_test: 0.6547 recall_val: 0.7219
+INFO:root:Epoch [146], Loss: 749.6111, Test Loss: 1538.9880, recall_train: 0.7327, recall_test: 0.6594 recall_val: 0.7172
+INFO:root:Epoch [147], Loss: 1031.4397, Test Loss: 1526.7117, recall_train: 0.7321, recall_test: 0.6719 recall_val: 0.7219
+INFO:root:Epoch [148], Loss: 871.9141, Test Loss: 1530.9626, recall_train: 0.7324, recall_test: 0.6516 recall_val: 0.7188
+INFO:root:Epoch [149], Loss: 746.7799, Test Loss: 1538.0500, recall_train: 0.7323, recall_test: 0.6500 recall_val: 0.7125
+INFO:root:Epoch [150], Loss: 970.2004, Test Loss: 1508.5546, recall_train: 0.7333, recall_test: 0.6578 recall_val: 0.7328
+INFO:root:Epoch [151], Loss: 948.5723, Test Loss: 1413.3593, recall_train: 0.7305, recall_test: 0.6547 recall_val: 0.7328
+INFO:root:Epoch [152], Loss: 974.2533, Test Loss: 1429.4490, recall_train: 0.7310, recall_test: 0.6484 recall_val: 0.7297
+INFO:root:Epoch [153], Loss: 892.1426, Test Loss: 1443.3184, recall_train: 0.7309, recall_test: 0.6531 recall_val: 0.7312
+INFO:root:Epoch [154], Loss: 790.8602, Test Loss: 1443.7709, recall_train: 0.7316, recall_test: 0.6375 recall_val: 0.7203
+INFO:root:Epoch [155], Loss: 1001.7406, Test Loss: 1462.8693, recall_train: 0.7337, recall_test: 0.6516 recall_val: 0.7250
+INFO:root:Epoch [156], Loss: 913.0820, Test Loss: 1437.1902, recall_train: 0.7343, recall_test: 0.6375 recall_val: 0.7438
+INFO:root:Epoch [157], Loss: 860.8304, Test Loss: 1454.9075, recall_train: 0.7356, recall_test: 0.6484 recall_val: 0.7266
+INFO:root:Epoch [158], Loss: 817.0158, Test Loss: 1444.4944, recall_train: 0.7340, recall_test: 0.6438 recall_val: 0.7375
+INFO:root:Epoch [159], Loss: 849.6506, Test Loss: 1468.4456, recall_train: 0.7344, recall_test: 0.6422 recall_val: 0.7312
+INFO:root:Epoch [160], Loss: 976.8623, Test Loss: 1450.8746, recall_train: 0.7351, recall_test: 0.6469 recall_val: 0.7359
+INFO:root:Epoch [161], Loss: 818.3490, Test Loss: 1468.0913, recall_train: 0.7344, recall_test: 0.6391 recall_val: 0.7438
+INFO:root:Epoch [162], Loss: 889.2759, Test Loss: 1483.8893, recall_train: 0.7338, recall_test: 0.6484 recall_val: 0.7406
+INFO:root:Epoch [163], Loss: 797.0201, Test Loss: 1487.4180, recall_train: 0.7362, recall_test: 0.6438 recall_val: 0.7312
+INFO:root:Epoch [164], Loss: 893.1932, Test Loss: 1495.1721, recall_train: 0.7375, recall_test: 0.6484 recall_val: 0.7312
+INFO:root:Epoch [165], Loss: 833.7426, Test Loss: 1493.1117, recall_train: 0.7377, recall_test: 0.6547 recall_val: 0.7312
+INFO:root:Epoch [166], Loss: 784.4795, Test Loss: 1447.7014, recall_train: 0.7374, recall_test: 0.6531 recall_val: 0.7172
+INFO:root:Epoch [167], Loss: 910.2996, Test Loss: 1429.7090, recall_train: 0.7383, recall_test: 0.6687 recall_val: 0.7250
+INFO:root:Epoch [168], Loss: 905.7959, Test Loss: 1436.8367, recall_train: 0.7383, recall_test: 0.6578 recall_val: 0.7156
+INFO:root:Epoch [169], Loss: 854.5879, Test Loss: 1468.4760, recall_train: 0.7377, recall_test: 0.6609 recall_val: 0.7359
+INFO:root:Epoch [170], Loss: 919.1736, Test Loss: 1446.7798, recall_train: 0.7383, recall_test: 0.6687 recall_val: 0.7344
+INFO:root:Epoch [171], Loss: 790.3831, Test Loss: 1500.3441, recall_train: 0.7360, recall_test: 0.6438 recall_val: 0.7281
+INFO:root:Epoch [172], Loss: 1066.0051, Test Loss: 1490.9500, recall_train: 0.7391, recall_test: 0.6531 recall_val: 0.7406
+INFO:root:Epoch [173], Loss: 842.8643, Test Loss: 1520.7671, recall_train: 0.7366, recall_test: 0.6609 recall_val: 0.7266
+INFO:root:Epoch [174], Loss: 817.1708, Test Loss: 1474.5613, recall_train: 0.7397, recall_test: 0.6625 recall_val: 0.7266
+INFO:root:Epoch [175], Loss: 731.0531, Test Loss: 1465.7633, recall_train: 0.7392, recall_test: 0.6656 recall_val: 0.7266
+INFO:root:Epoch [176], Loss: 826.4144, Test Loss: 1508.9727, recall_train: 0.7389, recall_test: 0.6687 recall_val: 0.7266
+INFO:root:Epoch [177], Loss: 709.7790, Test Loss: 1491.7771, recall_train: 0.7398, recall_test: 0.6484 recall_val: 0.7250
+INFO:root:Epoch [178], Loss: 1062.0193, Test Loss: 1439.9669, recall_train: 0.7391, recall_test: 0.6531 recall_val: 0.7391
+INFO:root:Epoch [179], Loss: 1011.4655, Test Loss: 1417.2440, recall_train: 0.7389, recall_test: 0.6562 recall_val: 0.7297
+INFO:root:Epoch [180], Loss: 714.3324, Test Loss: 1469.6057, recall_train: 0.7402, recall_test: 0.6359 recall_val: 0.7328
+INFO:root:Epoch [181], Loss: 882.1649, Test Loss: 1437.9187, recall_train: 0.7396, recall_test: 0.6391 recall_val: 0.7359
+INFO:root:Epoch [182], Loss: 805.4059, Test Loss: 1483.0339, recall_train: 0.7407, recall_test: 0.6297 recall_val: 0.7391
+INFO:root:Epoch [183], Loss: 869.1945, Test Loss: 1465.4581, recall_train: 0.7409, recall_test: 0.6281 recall_val: 0.7312
+INFO:root:Epoch [184], Loss: 690.6581, Test Loss: 1400.0559, recall_train: 0.7402, recall_test: 0.6469 recall_val: 0.7500
+INFO:root:Epoch [185], Loss: 1087.0990, Test Loss: 1404.1074, recall_train: 0.7421, recall_test: 0.6500 recall_val: 0.7500
+INFO:root:Epoch [186], Loss: 658.3099, Test Loss: 1435.2758, recall_train: 0.7404, recall_test: 0.6578 recall_val: 0.7391
+INFO:root:Epoch [187], Loss: 737.4100, Test Loss: 1406.3457, recall_train: 0.7412, recall_test: 0.6578 recall_val: 0.7438
+INFO:root:Epoch [188], Loss: 774.2709, Test Loss: 1390.3438, recall_train: 0.7404, recall_test: 0.6500 recall_val: 0.7406
+INFO:root:Epoch [189], Loss: 712.0360, Test Loss: 1347.2516, recall_train: 0.7396, recall_test: 0.6375 recall_val: 0.7453
+INFO:root:Epoch [190], Loss: 831.0355, Test Loss: 1356.9543, recall_train: 0.7403, recall_test: 0.6484 recall_val: 0.7453
+INFO:root:Epoch [191], Loss: 875.8285, Test Loss: 1380.7214, recall_train: 0.7417, recall_test: 0.6438 recall_val: 0.7328
+INFO:root:Epoch [192], Loss: 787.5374, Test Loss: 1337.4268, recall_train: 0.7404, recall_test: 0.6516 recall_val: 0.7422
+INFO:root:Epoch [193], Loss: 841.6820, Test Loss: 1323.1937, recall_train: 0.7394, recall_test: 0.6531 recall_val: 0.7406
+INFO:root:Epoch [194], Loss: 859.2311, Test Loss: 1381.6842, recall_train: 0.7392, recall_test: 0.6562 recall_val: 0.7547
+INFO:root:Epoch [195], Loss: 841.1711, Test Loss: 1373.8450, recall_train: 0.7408, recall_test: 0.6547 recall_val: 0.7438
+INFO:root:Epoch [196], Loss: 930.6215, Test Loss: 1351.5364, recall_train: 0.7442, recall_test: 0.6500 recall_val: 0.7422
+INFO:root:Epoch [197], Loss: 918.6481, Test Loss: 1362.9910, recall_train: 0.7441, recall_test: 0.6547 recall_val: 0.7594
+INFO:root:Epoch [198], Loss: 639.3527, Test Loss: 1403.0339, recall_train: 0.7453, recall_test: 0.6641 recall_val: 0.7453
+INFO:root:Epoch [199], Loss: 623.2579, Test Loss: 1393.8580, recall_train: 0.7452, recall_test: 0.6578 recall_val: 0.7547
+INFO:root:Epoch [200], Loss: 936.1207, Test Loss: 1412.4158, recall_train: 0.7472, recall_test: 0.6562 recall_val: 0.7484
+DEBUG:matplotlib.font_manager:findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=12.0.
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-BoldItalic.ttf) italic normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmtt10' (cmtt10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans-Oblique.ttf) oblique normal 400 normal>) = 1.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneralItalic.ttf) italic normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-Oblique.ttf) oblique normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-Bold.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-BoldOblique.ttf) oblique normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneral.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmsy10' (cmsy10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneralBolIta.ttf) italic normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans-BoldOblique.ttf) oblique normal 700 normal>) = 1.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneralBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBolIta.ttf) italic normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmmi10' (cmmi10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmex10' (cmex10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUniIta.ttf) italic normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans.ttf) normal normal 400 normal>) = 0.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-Bold.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif Display' (DejaVuSerifDisplay.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Display' (DejaVuSansDisplay.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-Italic.ttf) italic normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmb10' (cmb10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmr10' (cmr10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmss10' (cmss10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans-Bold.ttf) normal normal 700 normal>) = 0.33499999999999996
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUni.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeFiveSym' (STIXSizFiveSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=12.0 to DejaVu Sans ('/share/software/user/open/py-matplotlib/3.4.2_py39/lib/python3.9/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
+DEBUG:matplotlib.font_manager:findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0.
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-BoldItalic.ttf) italic normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmtt10' (cmtt10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans-Oblique.ttf) oblique normal 400 normal>) = 1.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneralItalic.ttf) italic normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-Oblique.ttf) oblique normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-Bold.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-BoldOblique.ttf) oblique normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneral.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmsy10' (cmsy10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneralBolIta.ttf) italic normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans-BoldOblique.ttf) oblique normal 700 normal>) = 1.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXGeneral' (STIXGeneralBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBolIta.ttf) italic normal 700 normal>) = 11.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmmi10' (cmmi10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmex10' (cmex10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUniIta.ttf) italic normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans.ttf) normal normal 400 normal>) = 0.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-Bold.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBol.ttf) normal normal 700 normal>) = 10.335
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif Display' (DejaVuSerifDisplay.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Display' (DejaVuSansDisplay.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-Italic.ttf) italic normal 400 normal>) = 11.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmb10' (cmb10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmr10' (cmr10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'cmss10' (cmss10.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans' (DejaVuSans-Bold.ttf) normal normal 700 normal>) = 0.33499999999999996
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXNonUnicode' (STIXNonUni.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeFiveSym' (STIXSizFiveSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymReg.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono.ttf) normal normal 400 normal>) = 10.05
+DEBUG:matplotlib.font_manager:findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0 to DejaVu Sans ('/share/software/user/open/py-matplotlib/3.4.2_py39/lib/python3.9/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
