@@ -235,7 +235,7 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                 q = q.to(device)
                 l = l.to(device)
                 outputs = model(d,q)
-                loss = criterion(outputs, l.squeeze().float())
+                loss = criterion(outputs, l.squeeze())
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -357,7 +357,7 @@ def get_parser():
     parser.add_argument("--queries", dest='num_queries', help="number of queries", type=int, default=3200)
     parser.add_argument("--k", dest='k', help="how many to keep", type=int, default=32)
     parser.add_argument("--method", dest='method', help="plane or anchor", type=str, default='plane')
-    parser.add_argument("--top", dest='top', help="top1 or topk", type=str, default='topk')
+    parser.add_argument("--top", dest='top', help="top1 or topk", type=str, default='top1')
     parser.add_argument("--r", dest='r', help="r of topr", type=int, default=10)
     parser.add_argument("--folder", dest='folder', help='folder name', type=str, default='diffsort')
     parser.add_argument("--lr", dest='lr', help='learning rate', type=float, default=.0001)
@@ -370,7 +370,7 @@ def main(session_name, anchor, n, D, num_queries, k, method, top, r, folder, lr)
     data, quers, db = setup(num_queries, n)
     loaders = data_loaders(quers, db)
 
-    model = AnchorNet(anchor, D, k, method=method).to(device)
+    model = AnchorNet(anchor, D, k, method=method, top=top, r=r).to(device)
     criterion = nn.MSELoss()
 
 
