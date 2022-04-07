@@ -27,9 +27,9 @@ import torchsort
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
-def soft_rank(array):
+def soft_rank(array, strength=.000001):
   #  return pytorch_ops.soft_rank(array.cpu(), direction="DESCENDING", regularization_strength=.001).cuda()
-   return torchsort.soft_rank(-1 * array, regularization_strength=.000001)
+   return torchsort.soft_rank(-1 * array, regularization_strength=strength)
 
 class AnchorNet(nn.Module):
     def __init__(self, num_anchs, d, k, out=128, method="plane", top='top1', r=10):
@@ -68,12 +68,12 @@ class AnchorNet(nn.Module):
         if self.top=='top1':
             out = torch.matmul(query_rank, data_rank.T)
         if self.top=='topk':
-            # Issues with super large or super small...
+            # Issues with super large or super small... 
             out = torch.matmul(query_rank, data_rank.T)
-            out = F.normalize(out, p=1, dim=1)
-            out = torch.div(out, out.max(dim=1)[0][:,None])
+            # out = F.normalize(out, p=2, dim=1)
+            # out = torch.div(out, out.max(dim=1)[0][:,None])
 
-            out = torch.clamp(soft_rank(out), max=self.r+1)
+            out = torch.clamp(soft_rank(out, strength=.0000001), max=self.r+1)
 
         return out
 
@@ -235,7 +235,7 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                 q = q.to(device)
                 l = l.to(device)
                 outputs = model(d,q)
-                loss = criterion(outputs, l.squeeze())
+                loss = criterion(outputs, l.squeeze().float())
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -371,13 +371,13 @@ def main(session_name, anchor, n, D, num_queries, k, method, top, r, folder, lr)
     loaders = data_loaders(quers, db)
 
     model = AnchorNet(anchor, D, k, method=method, top=top, r=r).to(device)
-    criterion = nn.MSELoss()
+    criterion = nn.MSELoss(reduction='sum')
 
 
     if args.top=='top1':
         criterion = nn.CrossEntropyLoss()
     elif args.top=='topk':
-        criterion == nn.MSELoss()
+        criterion == nn.MSELoss(reduction='sum')
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)  
     loss_steps, test_steps = train(model, criterion, optimizer, top, logger, r, *loaders)
     plot(loss_steps, test_steps, folder, session_name)
