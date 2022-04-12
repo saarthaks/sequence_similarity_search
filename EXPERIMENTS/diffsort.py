@@ -70,8 +70,8 @@ class AnchorNet(nn.Module):
         if self.top=='topk':
             # Issues with super large or super small... 
             out = torch.matmul(query_rank, data_rank.T)
-            # out = F.normalize(out, p=2, dim=1)
-            # out = torch.div(out, out.max(dim=1)[0][:,None])
+            out = F.normalize(out, p=2, dim=1)
+            out = torch.div(out, out.max(dim=1)[0][:,None])
 
             out = torch.clamp(soft_rank(out, strength=.0000001), max=self.r+1)
 
