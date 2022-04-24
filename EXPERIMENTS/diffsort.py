@@ -7,6 +7,8 @@ import logging
 import matplotlib.pyplot as plt
 import argparse
 
+from regex import A
+
 import torch, itertools
 import torch.nn.functional as F
 import torch.nn as nn
@@ -70,8 +72,10 @@ class AnchorNet(nn.Module):
         if self.top=='topk':
             # Issues with super large or super small... 
             out = torch.matmul(query_rank, data_rank.T)
-            out = F.normalize(out, p=2, dim=1)
-            out = torch.div(out, out.max(dim=1)[0][:,None])
+            means = torch.mean(out, dim=1, keepdim=True)
+            out = torch.sub(out, means)
+            # out = F.normalize(out, p=2, dim=1)
+            # out = torch.div(out, out.max(dim=1)[0][:,None])
 
             out = torch.clamp(soft_rank(out, strength=.0000001), max=self.r+1)
 
@@ -101,7 +105,10 @@ class AnchorNet(nn.Module):
 
         db_dists = torch.cdist(data_ranks, query_ranks, p=1).float()
         r_for_topr = self.r if self.top=='topk' else 10
-        closest_idx = torch.topk(db_dists, r_for_topr, dim=0, largest=False)
+        closest_idx = torch.topk(db_dists, r_for_topr, dim=0, largest=False, sorted=True)
+        # print(closest_idx)
+        # print(closest_idx[1].shape)
+        # print(closest_idx[1].transpose(0,1).shape)
         return closest_idx[1].transpose(0,1), query_ranks, closest_idx[0]
 
 def dataset_split(dataset, train_frac):
@@ -167,9 +174,30 @@ def return_loader(query_data_loader, query_data_test_loader, query_data_val_load
         q = next(iter(query_data_val_loader))
 #   Get the true nearest neighbors
     num_neighbors = 1
+
     if args.top == 'topk':
         num_neighbors = r
+    # hardcoded for topk
     true = torch.tensor(index_l2.kneighbors(q, n_neighbors=num_neighbors)[1])
+    # true = index_l2.kneighbors(q, n_neighbors=num_neighbors)
+    # print(true)
+    # print(true.shape)
+    # a = np.dstack((true[0], true[1]))
+
+    # def by_first(element):
+        # return element[0]
+    # la = np.array([sorted(entry, key=by_first) for entry in a])
+    # print(a)
+    # print(la)
+    # print(true)
+    # print(true[1].shape)
+    # print(a)
+    # b = np.zeros(a.shape)
+
+    # sorted_idx = np.argsort(a, axis=1)
+
+
+
     query_data = []
     for i in range(q.shape[0]):
         if args.top=='topk':
