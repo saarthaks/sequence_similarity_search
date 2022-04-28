@@ -33,6 +33,10 @@ def soft_rank(array, strength=.000001):
   #  return pytorch_ops.soft_rank(array.cpu(), direction="DESCENDING", regularization_strength=.001).cuda()
    return torchsort.soft_rank(-1 * array, regularization_strength=strength)
 
+def mseloss(output, target):
+    loss = torch.mean((output - target) ** 2)
+    return loss
+
 class AnchorNet(nn.Module):
     def __init__(self, num_anchs, d, k, out=128, method="plane", top='top1', r=10):
         super(AnchorNet, self).__init__()
@@ -45,10 +49,14 @@ class AnchorNet(nn.Module):
         #   # nn.Linear(hidden2, out)
         # )
         self.anchors = nn.Linear(d, num_anchs)
+        # self.anchors = nn.utils.weight_norm(nn.Linear(d, num_anchs),
+
         self.k = k
         self.r = r
         self.top = top
         self.method = method
+        self.norm_constant = k * (k + 1) * (2*k + 1) / 3
+        self.relu = nn.ReLU()
 
     def forward(self, data, query):
         # data_out = self.transform(data)
@@ -57,34 +65,38 @@ class AnchorNet(nn.Module):
         # query_rank = torch.clamp(soft_rank(self.anchors(query_out)), max=k)
         # data_rank = soft_rank(self.anchors(data))
         # query_rank = soft_rank(self.anchors(query))
-        if self.method=='plane':
-            data_rank = torch.abs(self.anchors(data))
-            query_rank = torch.abs(self.anchors(query))
-            anchor_norm = torch.norm(self.anchors.weight, dim=1)
-            data_rank = soft_rank(torch.div(data_rank, anchor_norm))
-            query_rank = soft_rank(torch.div(query_rank, anchor_norm))
-        elif self.method=='anchor':
-            data_rank = soft_rank(self.anchors(data))
-            query_rank = soft_rank(self.anchors(query))
+        with torch.no_grad():
+            self.anchors.weight.data = F.normalize(self.anchors.weight.data, dim=1)
+            with torch.enable_grad():
+                # torch.div(self.anchors.weight.data, torch.norm(self.anchors.weight.data, dim=1))
+                if self.method=='plane':   
+                    data_rank = self.relu(self.anchors(data))
+                    query_rank = self.relu(self.anchors(query))
+                    anchor_norm = torch.norm(self.anchors.weight, dim=1)
+                    data_rank = soft_rank(torch.div(data_rank, anchor_norm))
+                    query_rank = soft_rank(torch.div(query_rank, anchor_norm))
+                elif self.method=='anchor':
+                    data_rank = soft_rank(self.anchors(data))
+                    query_rank = soft_rank(self.anchors(query))
 
-        if self.top=='top1':
-            out = torch.matmul(query_rank, data_rank.T)
-        if self.top=='topk':
-            # Issues with super large or super small... 
-            out = torch.matmul(query_rank, data_rank.T)
-            means = torch.mean(out, dim=1, keepdim=True)
-            out = torch.sub(out, means)
-            # out = F.normalize(out, p=2, dim=1)
-            # out = torch.div(out, out.max(dim=1)[0][:,None])
-
-            out = torch.clamp(soft_rank(out, strength=.0000001), max=self.r+1)
+                if self.top=='top1':
+                    out = torch.matmul(query_rank, data_rank.T)
+                if self.top=='topk':
+                    # Issues with super large or super small... 
+                    out = torch.matmul(query_rank, data_rank.T)
+                    out = torch.div(out, self.norm_constant)
+                    # means = torch.mean(out, dim=1, keepdim=True)
+                    # out = torch.sub(out, means)
+                    # out = F.normalize(out, p=1, dim=1)
+                    # out = torch.div(out, out.max(dim=1)[0][:,None])
+                    out = torch.clamp(soft_rank(out, strength=.0000001), max=self.r+1)
 
         return out
 
     def evaluate(self, data, query):
         if self.method=='plane':
-            data_rank = torch.abs(self.anchors(data))
-            query_rank = torch.abs(self.anchors(query))
+            data_rank = self.relu(self.anchors(data))
+            query_rank = self.relu(self.anchors(query))
             anchor_norm = torch.norm(self.anchors.weight, dim=1)
             d_dist = torch.div(data_rank, anchor_norm)
             q_dist = torch.div(query_rank, anchor_norm)
@@ -106,9 +118,6 @@ class AnchorNet(nn.Module):
         db_dists = torch.cdist(data_ranks, query_ranks, p=1).float()
         r_for_topr = self.r if self.top=='topk' else 10
         closest_idx = torch.topk(db_dists, r_for_topr, dim=0, largest=False, sorted=True)
-        # print(closest_idx)
-        # print(closest_idx[1].shape)
-        # print(closest_idx[1].transpose(0,1).shape)
         return closest_idx[1].transpose(0,1), query_ranks, closest_idx[0]
 
 def dataset_split(dataset, train_frac):
@@ -146,17 +155,18 @@ def data_loaders(quers, db):
                                             shuffle=False)
 
     # The train docs
+    # TODO: bump to 100000
     docs_loader = torch.utils.data.DataLoader(dataset=doc_datasets['train'], 
                                             batch_size=25000, 
                                             shuffle=False)
 
     # The test docs
     docs_test_loader = torch.utils.data.DataLoader(dataset=doc_datasets['test'], 
-                                            batch_size=25000, 
+                                            batch_size=100000, 
                                             shuffle=False)
 
     docs_val_loader = torch.utils.data.DataLoader(dataset=doc_datasets['val'], 
-                                            batch_size=25000, 
+                                            batch_size=100000, 
                                             shuffle=False)
 
     return (query_data_loader, query_data_test_loader, query_data_val_loader, docs_loader, docs_test_loader, docs_val_loader)
@@ -205,46 +215,47 @@ def return_loader(query_data_loader, query_data_test_loader, query_data_val_load
             ground_truth.fill(r+1)
             top = np.arange(r) + 1
             ground_truth.put(true[i].view(-1, 1), top)
+            # print(sorted(np.nonzero(ground_truth - 11)[0]))
+            # print(true[i].sort())
             query_data.append([q[i], ground_truth])
         elif args.top=='top1':
             query_data.append([q[i], true[i]])
     test_set = dataset_split(query_data, 1)
 #   Return data as a dataloader
     data = torch.utils.data.DataLoader(dataset=test_set['train'], 
-                                           batch_size=320, 
+                                           batch_size=3200, 
                                            shuffle=False)
     return data
 
-# def test_inference(docs_test_loader, top, r, model):
-#     with torch.no_grad():
-#         correct = 0
-#         total = 0
-#         for d in docs_test_loader:
-#         # for d in docs_loader:
-#             test_loader = return_loader(query_data_loader, query_data_test_loader, query_data_val_loader, d, r, ret='test')
-#             d = d.to(device)
-#             for q, l in test_loader:
-#                 q = q.to(device)
-#                 l = l.to(device)
-#                 if top=='top1':
-#                     outputs = model.evaluate(d,q)
-#         #           Recall: TP / (TP + TN)
-#                     predicted = outputs[0][:,0]
-#                     total += l.size(0)
-#                     correct += (predicted.to(device) == l.flatten()).sum().item()
-#                 elif top=='topk':
-#                     l = l.int()
-#                     l = l - (r + 1)
-#                     l = torch.nonzero(l, as_tuple=True)[1].reshape(-1, r)
-#                     outputs = model.evaluate(d,q)[0]
-#                     c = torch.hstack((outputs, l)).squeeze()
-#                     c = c.sort(dim=1)[0]
-#                     intersection = torch.sum(c[:, 1:] == c[:, :-1], dim=1) / r
-#                     correct += intersection.mean()
-#                     total += 1
+def test_inference(query_data_loader, query_data_test_loader, query_data_val_loader, docs_loader, docs_test_loader, docs_val_loader, top, r, model):
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for d in docs_test_loader:
+        # for d in docs_loader:
+            test_loader = return_loader(query_data_loader, query_data_test_loader, query_data_val_loader, d, r, ret='test')
+            d = d.to(device)
+            for q, l in test_loader:
+                q = q.to(device)
+                l = l.to(device)
+                if top=='top1':
+                    outputs = model.evaluate(d,q)
+        #           Recall: TP / (TP + TN)
+                    predicted = outputs[0][:,0]
+                    total += l.size(0)
+                    correct += (predicted.to(device) == l.flatten()).sum().item()
+                elif top=='topk':
+                    l = l.int()
+                    l = l - (r + 1)
+                    l = torch.nonzero(l, as_tuple=True)[1].reshape(-1, r)
+                    outputs = model.evaluate(d,q)[0]
+                    c = torch.hstack((outputs, l)).squeeze()
+                    c = c.sort(dim=1)[0]
+                    intersection = torch.sum(c[:, 1:] == c[:, :-1], dim=1) / r
+                    correct += intersection.mean()
+                    total += 1
 
-#     logger.info ('recall_test: {:.4f}'
-#             .format(correct / total))
+    logger.info ('recall_test: {:.4f} norm: {:.4f}' .format(correct / total, torch.norm(model.anchors.weight)))
 
 # query_data_loader query_data_test_loader query_data_val_loader docs_loader docs_test_loader docs_val_loader
 def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_data_test_loader, query_data_val_loader, docs_loader, docs_test_loader, docs_val_loader):
@@ -256,6 +267,8 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
     #   the train queries and the correct data labels
         train_correct = 0
         train_total = 0
+        epoch_train_loss = 0
+        epoch_test_loss = 0
         for step, d in enumerate(docs_loader):
             query_loader = return_loader(query_data_loader, query_data_test_loader, query_data_val_loader, d, r, ret='query')
             d = d.to(device)
@@ -263,11 +276,15 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                 q = q.to(device)
                 l = l.to(device)
                 outputs = model(d,q)
+                # print(outputs.shape)
+                # print(mseloss(outputs, l.squeeze().float()))
                 loss = criterion(outputs, l.squeeze().float())
-
+                # print(loss.item())
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
+                epoch_train_loss += loss.item()
+
                 if top=='top1':
                     _, predicted = torch.max(outputs.data, 1)
                     train_total += l.size(0)
@@ -300,6 +317,7 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                             l = l.to(device)
                             lol = model(d,q)
                             test_loss = criterion(lol, l.squeeze())
+                            epoch_test_loss += test_loss.item()
                             if top=='top1':
                                 outputs = model.evaluate(d,q)
                     #           Recall: TP / (TP + TN)
@@ -342,11 +360,11 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                                 intersection = torch.sum(c[:, 1:] == c[:, :-1], dim=1) / r
                                 correct_val += intersection.mean()
                                 total_val += 1
-                    
-                    loss_steps.append(loss.item())
-                    test_steps.append(test_loss.item())
-                    logger.info ('Epoch [{}], Loss: {:.4f}, Test Loss: {:.4f}, recall_train: {:.4f}, recall_test: {:.4f} recall_val: {:.4f}'
-                        .format(epoch+1, loss.item(), test_loss.item(), train_correct / train_total, correct / total, correct_val / total_val))
+                    loss_steps.append(epoch_train_loss)
+                    test_steps.append(epoch_test_loss)
+
+                    logger.info ('Epoch [{}], Loss: {:.4f}, Test Loss: {:.4f}, recall_train: {:.4f}, recall_test: {:.4f} recall_val: {:.4f} norm: {:.4f}'
+                        .format(epoch+1, epoch_train_loss, epoch_test_loss, train_correct / train_total, correct / total, correct_val / total_val, torch.norm(model.anchors.weight)))
 
     return loss_steps, test_steps
 
@@ -399,14 +417,16 @@ def main(session_name, anchor, n, D, num_queries, k, method, top, r, folder, lr)
     loaders = data_loaders(quers, db)
 
     model = AnchorNet(anchor, D, k, method=method, top=top, r=r).to(device)
+    
     criterion = nn.MSELoss(reduction='sum')
 
 
     if args.top=='top1':
         criterion = nn.CrossEntropyLoss()
     elif args.top=='topk':
-        criterion == nn.MSELoss(reduction='sum')
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)  
+        criterion = nn.MSELoss(reduction='sum')
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)
+    test_inference(*loaders, top, r, model)  
     loss_steps, test_steps = train(model, criterion, optimizer, top, logger, r, *loaders)
     plot(loss_steps, test_steps, folder, session_name)
 
