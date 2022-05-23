@@ -25,9 +25,24 @@ import utils
 from data_classes import BERTDataset
 from dist_perm import DistPerm
 import torchsort
+import random
+from numpy.random import MT19937
+from numpy.random import RandomState, SeedSequence
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.manual_seed(0)
+random.seed(0)
+np.random.seed(0)
 print(device)
+
+def speckle(data, mean=0, sigma=.01):
+    row, col = data.shape
+    np.random.seed(123)
+    gauss = np.random.normal(mean, sigma, size=(row, col))
+    np.random.seed(0)
+    gauss = gauss.reshape(row, col)
+    data += data * gauss
+    return data
 
 def soft_rank(array, strength=.000001):
   #  return pytorch_ops.soft_rank(array.cpu(), direction="DESCENDING", regularization_strength=.001).cuda()
@@ -132,7 +147,7 @@ def dataset_split(dataset, train_frac):
     return dataset
 
 # Fits fine in mem
-def data_loaders(quers, db):
+def data_loaders(quers, db, speckle_std):
     batch_size=3200
     train_split = .8
 
@@ -140,10 +155,9 @@ def data_loaders(quers, db):
     doc_datasets = dataset_split(db, train_split)
 
     # The fixed train queries
-    query_data_loader = torch.utils.data.DataLoader(dataset=query_datasets['train'], 
+    query_data_loader = torch.utils.data.DataLoader(dataset=speckle(query_datasets['train'].dataset, mean=0, sigma=speckle_std), 
                                             batch_size=batch_size, 
                                             shuffle=False)
-
     # The fixed test queries 
     query_data_test_loader = torch.utils.data.DataLoader(dataset=query_datasets['test'], 
                                             batch_size=batch_size, 
@@ -155,11 +169,9 @@ def data_loaders(quers, db):
                                             shuffle=False)
 
     # The train docs
-    # TODO: bump to 100000
-    docs_loader = torch.utils.data.DataLoader(dataset=doc_datasets['train'], 
+    docs_loader = torch.utils.data.DataLoader(dataset=speckle(doc_datasets['train'].dataset, mean=0, sigma=speckle_std), 
                                             batch_size=25000, 
                                             shuffle=False)
-
     # The test docs
     docs_test_loader = torch.utils.data.DataLoader(dataset=doc_datasets['test'], 
                                             batch_size=100000, 
@@ -278,18 +290,25 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                 outputs = model(d,q)
                 # print(outputs.shape)
                 # print(mseloss(outputs, l.squeeze().float()))
-                loss = criterion(outputs, l.squeeze().float())
-                # print(loss.item())
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-                epoch_train_loss += loss.item()
+
 
                 if top=='top1':
+                    loss = criterion(outputs, l.squeeze())
+                    # print(loss.item())
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+                    epoch_train_loss += loss.item()
                     _, predicted = torch.max(outputs.data, 1)
                     train_total += l.size(0)
                     train_correct += (predicted == l.flatten()).sum().item()
                 elif top=='topk':
+                    loss = criterion(outputs, l.squeeze().float())
+                    # print(loss.item())
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+                    epoch_train_loss += loss.item()
                     l = l.int()
                     l = l - (r + 1)
                     l = torch.nonzero(l, as_tuple=True)[1].reshape(-1, r)
@@ -407,14 +426,15 @@ def get_parser():
     parser.add_argument("--r", dest='r', help="r of topr", type=int, default=10)
     parser.add_argument("--folder", dest='folder', help='folder name', type=str, default='diffsort')
     parser.add_argument("--lr", dest='lr', help='learning rate', type=float, default=.0001)
+    parser.add_argument("--speckle", dest='speckle_std', help='speckle noise std', type=float, default=.01)
 
 
     return parser
     
 
-def main(session_name, anchor, n, D, num_queries, k, method, top, r, folder, lr):
+def main(session_name, anchor, n, D, num_queries, k, method, top, r, folder, lr, speckle_std):
     data, quers, db = setup(num_queries, n)
-    loaders = data_loaders(quers, db)
+    loaders = data_loaders(quers, data, speckle_std)
 
     model = AnchorNet(anchor, D, k, method=method, top=top, r=r).to(device)
     
@@ -438,15 +458,15 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
 
-    session_name = "anchor_{}_k_{}_lr_{}_method_{}_top_{}_r_{}".format(args.anchor, args.k, args.lr, args.method, args.top, args.r)
+    session_name = "anchor_{}_k_{}_lr_{}_method_{}_top_{}_r_{}_speckle_{}".format(args.anchor, args.k, args.lr, args.method, args.top, args.r, args.speckle_std)
 
     logger = logging.getLogger()
     setup_logger(logger)
     logging.basicConfig(filename='{}/{}.log'.format(args.folder, session_name), level=logging.DEBUG)
 
-    params = (args.anchor, args.n, args.D, args.num_queries, args.k, args.method, args.top, args.r, args.folder, args.lr)
+    params = (args.anchor, args.n, args.D, args.num_queries, args.k, args.method, args.top, args.r, args.folder, args.lr, args.speckle_std)
 
-    logger.info("anchors: {} n: {} D: {} queries: {}  k: {} method: {} top: {} r: {} folder:{} lr: {}" \
+    logger.info("anchors: {} n: {} D: {} queries: {}  k: {} method: {} top: {} r: {} folder:{} lr: {} speckle_std: {}" \
                     .format(*params))
 
     main(session_name, *params)
