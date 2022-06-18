@@ -37,15 +37,12 @@ print(device)
 
 def speckle(data, mean=0, sigma=.01):
     row, col = data.shape
-    np.random.seed(123)
-    gauss = np.random.normal(mean, sigma, size=(row, col))
-    np.random.seed(0)
+    gauss = torch.normal(mean, sigma, size=(row, col)).to(device)
     gauss = gauss.reshape(row, col)
     data += data * gauss
     return data
 
 def soft_rank(array, strength=.000001):
-  #  return pytorch_ops.soft_rank(array.cpu(), direction="DESCENDING", regularization_strength=.001).cuda()
    return torchsort.soft_rank(-1 * array, regularization_strength=strength)
 
 def mseloss(output, target):
@@ -53,17 +50,9 @@ def mseloss(output, target):
     return loss
 
 class AnchorNet(nn.Module):
-    def __init__(self, num_anchs, d, k, out=128, method="plane", top='top1', r=10):
+    def __init__(self, num_anchs, d, k, out=128, method="plane", top='top1', r=10, speckle_std=.01):
         super(AnchorNet, self).__init__()
-        # self.transform = nn.Sequential(
-        #   # nn.Linear(d, hidden),
-        #   # nn.ReLU(),
-        #   # nn.Linear(hidden, hidden2),
-        #   # nn.ReLU(),
-        #   # nn.Linear(hidden, hidden2),
-        #   # nn.Linear(hidden2, out)
-        # )
-        self.anchors = nn.Linear(d, num_anchs)
+        self.anchors = nn.Linear(d, num_anchs, bias=False)
         # self.anchors = nn.utils.weight_norm(nn.Linear(d, num_anchs),
 
         self.k = k
@@ -72,27 +61,31 @@ class AnchorNet(nn.Module):
         self.method = method
         self.norm_constant = k * (k + 1) * (2*k + 1) / 3
         self.relu = nn.ReLU()
+        self.speckle_std = speckle_std
 
     def forward(self, data, query):
-        # data_out = self.transform(data)
-        # query_out = self.transform(query)
-        # data_rank = torch.clamp(soft_rank(self.anchors(data_out)), max=k)
-        # query_rank = torch.clamp(soft_rank(self.anchors(query_out)), max=k)
-        # data_rank = soft_rank(self.anchors(data))
-        # query_rank = soft_rank(self.anchors(query))
         with torch.no_grad():
             self.anchors.weight.data = F.normalize(self.anchors.weight.data, dim=1)
             with torch.enable_grad():
-                # torch.div(self.anchors.weight.data, torch.norm(self.anchors.weight.data, dim=1))
-                if self.method=='plane':   
-                    data_rank = self.relu(self.anchors(data))
-                    query_rank = self.relu(self.anchors(query))
+                if self.method=='plane':  
+                    input_data = self.anchors(data)
+                    input_query = self.anchors(query)
+                    if self.speckle_std > 0:
+                        input_data = speckle(1 - self.anchors(data), sigma=self.speckle_std)
+                        input_query = speckle(1 - self.anchors(query), sigma=self.speckle_std) 
+                    data_rank = self.relu(input_data)
+                    query_rank = self.relu(input_query)
                     anchor_norm = torch.norm(self.anchors.weight, dim=1)
                     data_rank = soft_rank(torch.div(data_rank, anchor_norm))
                     query_rank = soft_rank(torch.div(query_rank, anchor_norm))
                 elif self.method=='anchor':
-                    data_rank = soft_rank(self.anchors(data))
-                    query_rank = soft_rank(self.anchors(query))
+                    input_data = self.anchors(data)
+                    input_query = self.anchors(query)
+                    if self.speckle_std > 0:
+                        input_data = speckle(1 - self.anchors(data), sigma=self.speckle_std)
+                        input_query = speckle(1 - self.anchors(query), sigma=self.speckle_std)
+                    data_rank = soft_rank(input_data)
+                    query_rank = soft_rank(input_query)
 
                 if self.top=='top1':
                     out = torch.matmul(query_rank, data_rank.T)
@@ -100,10 +93,6 @@ class AnchorNet(nn.Module):
                     # Issues with super large or super small... 
                     out = torch.matmul(query_rank, data_rank.T)
                     out = torch.div(out, self.norm_constant)
-                    # means = torch.mean(out, dim=1, keepdim=True)
-                    # out = torch.sub(out, means)
-                    # out = F.normalize(out, p=1, dim=1)
-                    # out = torch.div(out, out.max(dim=1)[0][:,None])
                     out = torch.clamp(soft_rank(out, strength=.0000001), max=self.r+1)
 
         return out
@@ -147,7 +136,7 @@ def dataset_split(dataset, train_frac):
     return dataset
 
 # Fits fine in mem
-def data_loaders(quers, db, speckle_std):
+def data_loaders(quers, db):
     batch_size=3200
     train_split = .8
 
@@ -155,7 +144,7 @@ def data_loaders(quers, db, speckle_std):
     doc_datasets = dataset_split(db, train_split)
 
     # The fixed train queries
-    query_data_loader = torch.utils.data.DataLoader(dataset=speckle(query_datasets['train'].dataset, mean=0, sigma=speckle_std), 
+    query_data_loader = torch.utils.data.DataLoader(dataset=query_datasets['train'], 
                                             batch_size=batch_size, 
                                             shuffle=False)
     # The fixed test queries 
@@ -169,7 +158,7 @@ def data_loaders(quers, db, speckle_std):
                                             shuffle=False)
 
     # The train docs
-    docs_loader = torch.utils.data.DataLoader(dataset=speckle(doc_datasets['train'].dataset, mean=0, sigma=speckle_std), 
+    docs_loader = torch.utils.data.DataLoader(dataset=doc_datasets['train'], 
                                             batch_size=25000, 
                                             shuffle=False)
     # The test docs
@@ -288,13 +277,9 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                 q = q.to(device)
                 l = l.to(device)
                 outputs = model(d,q)
-                # print(outputs.shape)
-                # print(mseloss(outputs, l.squeeze().float()))
-
 
                 if top=='top1':
                     loss = criterion(outputs, l.squeeze())
-                    # print(loss.item())
                     optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
@@ -304,7 +289,6 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                     train_correct += (predicted == l.flatten()).sum().item()
                 elif top=='topk':
                     loss = criterion(outputs, l.squeeze().float())
-                    # print(loss.item())
                     optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
@@ -318,7 +302,6 @@ def train(model, criterion, optimizer, top, logger, r, query_data_loader, query_
                     intersection = torch.sum(c[:, 1:] == c[:, :-1], dim=1) / r
                     train_correct += intersection.mean()
                     train_total += 1
-            # print('Epoch [{}] Step [{}] Loss: {:.4f}'.format(epoch, step, loss.item()))
             
     #   Eval step: repeat but with the test documents and test queries      
         if epoch % 1 == 0:
@@ -434,9 +417,9 @@ def get_parser():
 
 def main(session_name, anchor, n, D, num_queries, k, method, top, r, folder, lr, speckle_std):
     data, quers, db = setup(num_queries, n)
-    loaders = data_loaders(quers, data, speckle_std)
+    loaders = data_loaders(quers, data)
 
-    model = AnchorNet(anchor, D, k, method=method, top=top, r=r).to(device)
+    model = AnchorNet(anchor, D, k, method=method, top=top, r=r, speckle_std=speckle_std).to(device)
     
     criterion = nn.MSELoss(reduction='sum')
 
